@@ -1,1 +1,651 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poker Tournament Bracket</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1115;
+      --surface: #1a1d24;
+      --surface-2: #22262e;
+      --border: #2e333d;
+      --border-light: #3a404d;
+      --text: #e2e4e9;
+      --text-muted: #8b8f99;
+      --text-dim: #555963;
+      --accent: #e8a832;
+      --accent-dim: #c48a1a;
+      --red: #d94848;
+      --green: #3dba6a;
+      --green-dim: #2d9452;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-body: 'DM Sans', sans-serif;
+
+      --match-w: 200px;
+      --match-h: 72px;
+      --round-gap: 48px;
+      --connector-color: #2e333d;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    /* --- HEADER --- */
+    .header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--accent);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-setup { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+    .status-active { background: rgba(61, 186, 106, 0.12); color: var(--green); border: 1px solid var(--green-dim); }
+    .status-complete { background: rgba(232, 168, 50, 0.12); color: var(--accent); border: 1px solid var(--accent-dim); }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .refresh-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* --- CHAMPION BANNER --- */
+    .champion-banner {
+      padding: 32px;
+      text-align: center;
+      background: rgba(232, 168, 50, 0.05);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .champion-banner.hidden { display: none; }
+
+    .champion-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .champion-name {
+      font-family: var(--font-mono);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
+
+    /* --- BRACKET CONTAINER --- */
+    .bracket-wrapper {
+      padding: 32px;
+      overflow-x: auto;
+    }
+
+    .bracket-section {
+      margin-bottom: 48px;
+    }
+
+    .bracket-section:last-child { margin-bottom: 0; }
+
+    .bracket-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      padding-left: 4px;
+    }
+
+    /* --- BRACKET ROUNDS --- */
+    .bracket-rounds {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      position: relative;
+    }
+
+    .bracket-round {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      min-width: var(--match-w);
+      position: relative;
+      padding-right: var(--round-gap);
+    }
+
+    .bracket-round:last-child { padding-right: 0; }
+
+    .round-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 12px;
+      position: absolute;
+      top: -20px;
+      left: 0;
+      width: var(--match-w);
+    }
+
+    /* --- MATCH CARD --- */
+    .match {
+      width: var(--match-w);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 6px 0;
+      position: relative;
+    }
+
+    .match.match-ready {
+      border-color: var(--border-light);
+    }
+
+    .match.match-complete {
+      border-color: var(--border);
+    }
+
+    .match-id-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-dim);
+      padding: 4px 8px 0;
+      text-align: right;
+    }
+
+    .match-slot {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px;
+      gap: 6px;
+      min-height: 28px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .match-slot:last-child { border-bottom: none; }
+
+    .match-slot.is-winner {
+      background: rgba(61, 186, 106, 0.08);
+    }
+
+    .match-slot.is-loser {
+      opacity: 0.4;
+    }
+
+    .match-slot-seed {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      min-width: 14px;
+    }
+
+    .match-slot-name {
+      font-size: 12px;
+      font-weight: 600;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .match-slot-name.bye { color: var(--text-dim); font-style: italic; }
+    .match-slot-name.tbd { color: var(--text-dim); font-style: italic; }
+
+    .match-slot-name a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .match-slot-name a:hover { color: var(--accent); }
+
+    .winner-indicator {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* --- SVG CONNECTORS --- */
+    .connector-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .connector-svg line {
+      stroke: var(--connector-color);
+      stroke-width: 1.5;
+    }
+
+    /* --- EMPTY STATE --- */
+    .empty-state {
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--text-dim);
+    }
+
+    .empty-state p {
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state .sub {
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 768px) {
+      :root {
+        --match-w: 160px;
+        --round-gap: 32px;
+      }
+      .header { padding: 16px 20px; }
+      .bracket-wrapper { padding: 20px; }
+      .champion-name { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1>POKER TOURNAMENT</h1>
+    <div class="header-right">
+      <div class="live-dot" id="liveDot"></div>
+      <span class="refresh-label" id="refreshLabel">updating...</span>
+      <span class="status-badge status-setup" id="statusBadge">SETUP</span>
+    </div>
+  </header>
+
+  <!-- CHAMPION BANNER -->
+  <div class="champion-banner hidden" id="championBanner">
+    <div class="champion-label">Tournament Champion</div>
+    <div class="champion-name" id="championName"></div>
+  </div>
+
+  <!-- BRACKET -->
+  <div class="bracket-wrapper" id="bracketWrapper">
+    <div class="empty-state">
+      <p>Waiting for tournament to begin</p>
+      <p class="sub">Bracket will appear here once generated</p>
+    </div>
+  </div>
+
+  <script>
+    // =============================================
+    // CONFIG
+    // =============================================
+    // PASTE YOUR APPS SCRIPT WEB APP URL BELOW
+    var API_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+    var POLL_INTERVAL = 15000;
+    var pollTimer = null;
+    var state = null;
+
+    // =============================================
+    // INIT
+    // =============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchState();
+      pollTimer = setInterval(fetchState, POLL_INTERVAL);
+    });
+
+    // =============================================
+    // DATA
+    // =============================================
+    function fetchState() {
+      var label = document.getElementById('refreshLabel');
+      label.textContent = 'updating...';
+
+      fetch(API_URL + '?action=getState')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          state = data;
+          render();
+          label.textContent = 'live';
+        })
+        .catch(function() {
+          label.textContent = 'offline';
+        });
+    }
+
+    // =============================================
+    // RENDER
+    // =============================================
+    function render() {
+      if (!state || !state.matches || state.matches.length === 0) return;
+
+      renderStatus();
+      renderChampion();
+      renderBracket();
+    }
+
+    function renderStatus() {
+      var badge = document.getElementById('statusBadge');
+      var status = (state.settings && state.settings.tournament_status) || 'setup';
+      badge.textContent = status.toUpperCase();
+      badge.className = 'status-badge status-' + status;
+    }
+
+    function renderChampion() {
+      var banner = document.getElementById('championBanner');
+      var name = document.getElementById('championName');
+
+      if (state.settings.tournament_status === 'complete' && state.settings.champion) {
+        name.textContent = state.settings.champion;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function renderBracket() {
+      var wrapper = document.getElementById('bracketWrapper');
+
+      // Separate matches by bracket, filter out bye-resolved matches
+      var winners = state.matches.filter(function(m) {
+        return m.bracket === 'winners' && m.status !== 'bye';
+      });
+      var losers = state.matches.filter(function(m) {
+        return m.bracket === 'losers' && m.status !== 'bye';
+      });
+      var gf = state.matches.filter(function(m) {
+        return m.bracket === 'grand_finals';
+      });
+
+      var html = '';
+
+      if (winners.length > 0) {
+        html += renderBracketSection('Winners Bracket', winners);
+      }
+
+      if (losers.length > 0) {
+        html += renderBracketSection('Losers Bracket', losers);
+      }
+
+      if (gf.length > 0) {
+        html += renderBracketSection('Grand Finals', gf);
+      }
+
+      wrapper.innerHTML = html;
+
+      // Draw connectors after DOM update
+      requestAnimationFrame(function() {
+        drawAllConnectors();
+      });
+    }
+
+    function renderBracketSection(title, matches) {
+      // Group by round
+      var rounds = {};
+      matches.forEach(function(m) {
+        var r = m.round;
+        if (!rounds[r]) rounds[r] = [];
+        rounds[r].push(m);
+      });
+
+      // Sort rounds numerically
+      var roundKeys = Object.keys(rounds).map(Number).sort(function(a, b) { return a - b; });
+
+      // Determine if we need to set height based on max matches in first round
+      var maxMatches = 0;
+      roundKeys.forEach(function(r) {
+        if (rounds[r].length > maxMatches) maxMatches = rounds[r].length;
+      });
+
+      // Calculate minimum height to give enough space
+      var minHeight = Math.max(maxMatches * 84, 120);
+
+      var sectionId = title.replace(/\s+/g, '-').toLowerCase();
+
+      var html = '<div class="bracket-section">';
+      html += '<div class="bracket-title">' + esc(title) + '</div>';
+      html += '<div class="bracket-rounds" id="section-' + sectionId + '" style="min-height:' + minHeight + 'px; padding-top: 24px;">';
+
+      roundKeys.forEach(function(r, idx) {
+        var roundMatches = rounds[r];
+        roundMatches.sort(function(a, b) { return a.match - b.match; });
+
+        var roundLabel = getRoundLabel(title, r, roundKeys.length, idx);
+
+        html += '<div class="bracket-round" data-section="' + sectionId + '" data-round="' + r + '">';
+        html += '<div class="round-label">' + roundLabel + '</div>';
+
+        roundMatches.forEach(function(m) {
+          html += renderMatch(m);
+        });
+
+        html += '</div>';
+      });
+
+      html += '</div></div>';
+      return html;
+    }
+
+    function getRoundLabel(sectionTitle, round, totalRounds, idx) {
+      if (sectionTitle === 'Grand Finals') {
+        return round === 1 ? 'Grand Final' : 'Reset';
+      }
+      if (sectionTitle === 'Winners Bracket') {
+        if (idx === totalRounds - 1) return 'WB Final';
+        if (idx === totalRounds - 2) return 'WB Semi';
+        return 'WB Round ' + round;
+      }
+      if (sectionTitle === 'Losers Bracket') {
+        if (idx === totalRounds - 1) return 'LB Final';
+        if (idx === totalRounds - 2) return 'LB Semi';
+        return 'LB Round ' + round;
+      }
+      return 'Round ' + round;
+    }
+
+    function renderMatch(m) {
+      var isComplete = (m.status === 'complete');
+      var cls = 'match';
+      if (m.status === 'ready') cls += ' match-ready';
+      if (isComplete) cls += ' match-complete';
+
+      var p1Winner = isComplete && m.winnerName === m.player1Name;
+      var p2Winner = isComplete && m.winnerName === m.player2Name;
+
+      var html = '<div class="' + cls + '" data-match-id="' + esc(m.matchId) + '">';
+      html += '<div class="match-id-label">' + esc(m.matchId) + '</div>';
+      html += renderSlot(m.player1Name, m.player1TornID, p1Winner, isComplete && !p1Winner);
+      html += renderSlot(m.player2Name, m.player2TornID, p2Winner, isComplete && !p2Winner);
+      html += '</div>';
+      return html;
+    }
+
+    function renderSlot(name, tornId, isWinner, isLoser) {
+      var cls = 'match-slot';
+      if (isWinner) cls += ' is-winner';
+      if (isLoser) cls += ' is-loser';
+
+      var html = '<div class="' + cls + '">';
+
+      if (!name) {
+        html += '<span class="match-slot-name tbd">TBD</span>';
+      } else if (name === 'BYE') {
+        html += '<span class="match-slot-name bye">BYE</span>';
+      } else {
+        var profileUrl = 'https://www.torn.com/profiles.php?XID=' + esc(tornId);
+        html += '<span class="match-slot-name"><a href="' + profileUrl + '" target="_blank" rel="noopener">' + esc(name) + '</a></span>';
+      }
+
+      if (isWinner) {
+        html += '<div class="winner-indicator"></div>';
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    // =============================================
+    // SVG CONNECTORS
+    // =============================================
+    function drawAllConnectors() {
+      // Remove any existing SVGs
+      document.querySelectorAll('.connector-svg').forEach(function(el) { el.remove(); });
+
+      // Draw connectors for each section
+      var sections = document.querySelectorAll('.bracket-rounds');
+      sections.forEach(function(section) {
+        drawSectionConnectors(section);
+      });
+    }
+
+    function drawSectionConnectors(section) {
+      var rounds = section.querySelectorAll('.bracket-round');
+      if (rounds.length < 2) return;
+
+      var sectionRect = section.getBoundingClientRect();
+
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.classList.add('connector-svg');
+      svg.setAttribute('width', sectionRect.width);
+      svg.setAttribute('height', sectionRect.height);
+      section.appendChild(svg);
+
+      for (var i = 0; i < rounds.length - 1; i++) {
+        var currentMatches = rounds[i].querySelectorAll('.match');
+        var nextMatches = rounds[i + 1].querySelectorAll('.match');
+
+        // For standard brackets, every 2 matches in round i feed into 1 match in round i+1
+        // But in losers bracket, the pattern can be 1:1 as well
+        // We'll connect based on actual match advancement data
+
+        currentMatches.forEach(function(matchEl) {
+          var matchId = matchEl.getAttribute('data-match-id');
+          var matchData = findMatch(matchId);
+          if (!matchData) return;
+
+          var winnerNext = matchData.winnerNextMatch;
+          if (!winnerNext) return;
+
+          // Find the target match element in this section
+          var targetEl = section.querySelector('[data-match-id="' + winnerNext + '"]');
+          if (!targetEl) return;
+
+          // Calculate positions relative to section
+          var fromRect = matchEl.getBoundingClientRect();
+          var toRect = targetEl.getBoundingClientRect();
+
+          var fromX = fromRect.right - sectionRect.left;
+          var fromY = fromRect.top + fromRect.height / 2 - sectionRect.top;
+          var toX = toRect.left - sectionRect.left;
+          var toY = toRect.top + toRect.height / 2 - sectionRect.top;
+
+          var midX = fromX + (toX - fromX) / 2;
+
+          // Draw three-segment connector: horizontal, vertical, horizontal
+          addLine(svg, fromX, fromY, midX, fromY);
+          addLine(svg, midX, fromY, midX, toY);
+          addLine(svg, midX, toY, toX, toY);
+        });
+      }
+    }
+
+    function addLine(svg, x1, y1, x2, y2) {
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x1);
+      line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+      svg.appendChild(line);
+    }
+
+    function findMatch(matchId) {
+      if (!state || !state.matches) return null;
+      for (var i = 0; i < state.matches.length; i++) {
+        if (state.matches[i].matchId === matchId) return state.matches[i];
+      }
+      return null;
+    }
+
+    // =============================================
+    // HELPERS
+    // =============================================
+    function esc(str) {
+      if (!str) return '';
+      var div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    }
+
+    // Redraw connectors on resize
+    var resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(drawAllConnectors, 200);
+    });
+  </script>
+
+</body>
+</html>
