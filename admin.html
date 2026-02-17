@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +52,12 @@
       color: var(--accent);
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .status-badge {
       font-family: var(--font-mono);
       font-size: 12px;
@@ -70,8 +75,8 @@
     /* --- LAYOUT --- */
     .main {
       display: grid;
-      grid-template-columns: 340px 1fr;
-      min-height: calc(100vh - 120px);
+      grid-template-columns: 380px 1fr;
+      min-height: calc(100vh - 73px);
     }
 
     /* --- SIDEBAR: PLAYERS --- */
@@ -112,11 +117,7 @@
       width: 100%;
     }
 
-    .add-player-form input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
+    .add-player-form input:focus { outline: none; border-color: var(--accent); }
     .add-player-form input::placeholder { color: var(--border-light); }
 
     .add-player-row {
@@ -126,6 +127,11 @@
 
     .add-player-row input:first-child { flex: 1.4; }
     .add-player-row input:last-child { flex: 1; }
+
+    .form-buttons {
+      display: flex;
+      gap: 8px;
+    }
 
     .btn-add {
       font-family: var(--font-body);
@@ -138,35 +144,111 @@
       color: var(--accent);
       cursor: pointer;
       transition: background 0.15s;
-      width: 100%;
+      flex: 1;
     }
 
     .btn-add:hover { background: rgba(232, 168, 50, 0.2); }
 
+    .btn-sample {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-sample:hover { border-color: var(--text-muted); color: var(--text); }
+
+    /* --- BYE INFO --- */
+    .bye-info {
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bye-info.hidden { display: none; }
+
+    .bye-needed { color: var(--text-muted); }
+    .bye-count { font-weight: 600; }
+    .bye-count.ok { color: var(--green); }
+    .bye-count.mismatch { color: var(--red); }
+
+    /* --- PLAYER LIST --- */
     .player-list {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 0;
+      padding: 4px 0;
     }
 
     .player-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
       padding: 10px 24px;
       transition: background 0.1s;
     }
 
     .player-item:hover { background: var(--surface); }
 
+    .bye-toggle {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-light);
+      border-radius: 3px;
+      background: var(--bg);
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all 0.15s;
+    }
+
+    .bye-toggle:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .bye-toggle:checked::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 5px;
+      width: 4px;
+      height: 9px;
+      border: solid var(--bg);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
     .player-info {
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-width: 0;
     }
 
     .player-name {
       font-size: 14px;
       font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .player-torn-id {
@@ -182,6 +264,18 @@
 
     .player-torn-id a:hover { color: var(--accent); }
 
+    .player-bye-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      background: rgba(232, 168, 50, 0.12);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
     .btn-remove {
       font-family: var(--font-mono);
       font-size: 11px;
@@ -192,12 +286,10 @@
       border-radius: 3px;
       cursor: pointer;
       transition: all 0.15s;
+      flex-shrink: 0;
     }
 
-    .btn-remove:hover {
-      border-color: var(--red);
-      color: var(--red);
-    }
+    .btn-remove:hover { border-color: var(--red); color: var(--red); }
 
     .player-count {
       padding: 12px 24px;
@@ -230,10 +322,7 @@
       color: var(--text-muted);
     }
 
-    .toolbar-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .toolbar-actions { display: flex; gap: 8px; }
 
     .btn {
       font-family: var(--font-body);
@@ -251,11 +340,7 @@
 
     .btn-primary { background: var(--accent); color: var(--bg); }
     .btn-danger { background: var(--red); color: #fff; }
-    .btn-outline {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
+    .btn-outline { background: none; border: 1px solid var(--border); color: var(--text-muted); }
     .btn-outline:hover { border-color: var(--text-muted); color: var(--text); }
 
     /* --- MATCH LIST --- */
@@ -347,11 +432,7 @@
       opacity: 0.5;
     }
 
-    .match-player-name {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
+    .match-player-name { font-size: 14px; font-weight: 600; }
     .match-player-name.bye { color: var(--border-light); font-style: italic; }
     .match-player-name.tbd { color: var(--text-muted); font-style: italic; }
 
@@ -397,11 +478,7 @@
       margin-bottom: 8px;
     }
 
-    .champion-name {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent);
-    }
+    .champion-name { font-size: 28px; font-weight: 700; color: var(--accent); }
 
     /* --- TOAST --- */
     .toast-container {
@@ -483,21 +560,17 @@
       line-height: 1.6;
     }
 
-    .confirm-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
+    .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
     /* --- RESPONSIVE --- */
     @media (max-width: 768px) {
       .main { grid-template-columns: 1fr; }
       .sidebar { border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; }
       .header { padding: 16px 20px; }
-      .config-bar { padding: 12px 20px; flex-wrap: wrap; }
       .sidebar-header { padding: 16px 20px 12px; }
       .player-item { padding: 10px 20px; }
       .player-count { padding: 10px 20px; }
+      .bye-info { padding: 10px 20px; }
       .panel-toolbar { padding: 12px 20px; flex-wrap: wrap; }
       .match-sections { padding: 12px 20px 24px; }
     }
@@ -505,12 +578,8 @@
 </head>
 <body>
 
-  <!-- LOADING OVERLAY -->
-  <div class="loading-overlay hidden" id="loading">
-    <div class="spinner"></div>
-  </div>
+  <div class="loading-overlay hidden" id="loading"><div class="spinner"></div></div>
 
-  <!-- CONFIRM DIALOG -->
   <div class="confirm-overlay hidden" id="confirmOverlay">
     <div class="confirm-box">
       <p id="confirmMessage">Are you sure?</p>
@@ -521,19 +590,17 @@
     </div>
   </div>
 
-  <!-- TOASTS -->
   <div class="toast-container" id="toasts"></div>
 
-  <!-- HEADER -->
   <header class="header">
     <h1>POKER TOURNAMENT // ADMIN</h1>
-    <span class="status-badge status-setup" id="statusBadge">SETUP</span>
+    <div class="header-right">
+      <span class="status-badge status-setup" id="statusBadge">SETUP</span>
+    </div>
   </header>
 
-  <!-- MAIN LAYOUT -->
   <div class="main">
 
-    <!-- SIDEBAR: PLAYERS -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <h2>Players</h2>
@@ -542,14 +609,22 @@
             <input type="text" id="inputName" placeholder="Player name">
             <input type="text" id="inputTornId" placeholder="Torn ID">
           </div>
-          <button class="btn-add" id="btnAddPlayer">Add Player</button>
+          <div class="form-buttons">
+            <button class="btn-add" id="btnAddPlayer">Add Player</button>
+            <button class="btn-sample" id="btnSample">Sample Data</button>
+          </div>
         </div>
       </div>
+
+      <div class="bye-info hidden" id="byeInfo">
+        <span class="bye-needed" id="byeNeeded">0 byes needed</span>
+        <span class="bye-count" id="byeCount">0 / 0 assigned</span>
+      </div>
+
       <div class="player-list" id="playerList"></div>
       <div class="player-count" id="playerCount">0 players</div>
     </aside>
 
-    <!-- MAIN PANEL: MATCHES -->
     <div class="panel">
       <div class="panel-toolbar">
         <h2>Matches</h2>
@@ -568,23 +643,19 @@
   </div>
 
   <script>
-    // =============================================
-    // STATE
-    // =============================================
     // PASTE YOUR APPS SCRIPT WEB APP URL BELOW
-    var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548nqR1ZIUkorU-ndtON1Vm9_O1_h_zSJFd7_e-yk77tCHLQ/exec';
-    let state = { settings: {}, players: [], matches: [] };
+    var API_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
-    // =============================================
-    // INIT
-    // =============================================
+    var state = { settings: {}, players: [], matches: [], byeInfo: {} };
+
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('btnAddPlayer').addEventListener('click', addPlayer);
       document.getElementById('btnGenerate').addEventListener('click', generateBracket);
       document.getElementById('btnReset').addEventListener('click', resetTournament);
+      document.getElementById('btnSample').addEventListener('click', loadSampleData);
 
       document.getElementById('inputName').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') addPlayer();
+        if (e.key === 'Enter') document.getElementById('inputTornId').focus();
       });
       document.getElementById('inputTornId').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') addPlayer();
@@ -593,9 +664,7 @@
       fetchState();
     });
 
-    // =============================================
-    // API CALLS
-    // =============================================
+    // --- API ---
     function apiCall(action, params, callback) {
       var url = API_URL + '?action=' + encodeURIComponent(action);
       if (params) {
@@ -629,9 +698,7 @@
       });
     }
 
-    // =============================================
-    // ACTIONS
-    // =============================================
+    // --- ACTIONS ---
     function addPlayer() {
       var name = document.getElementById('inputName').value.trim();
       var tornId = document.getElementById('inputTornId').value.trim();
@@ -653,8 +720,29 @@
       });
     }
 
+    function toggleBye(tornId) {
+      apiCall('toggleBye', { tornId: tornId }, function(data) {
+        toast(data.message, 'success');
+        fetchState();
+      });
+    }
+
+    function loadSampleData() {
+      showConfirm('Load 10 sample players? This will replace any existing players.', function() {
+        apiCall('loadSampleData', null, function(data) {
+          toast(data.message, 'success');
+          fetchState();
+        });
+      });
+    }
+
     function generateBracket() {
-      confirm('Generate bracket? This will randomly seed all players. You cannot add or remove players after this.', function() {
+      var bi = state.byeInfo || {};
+      if (bi.byesNeeded > 0 && bi.byesAssigned !== bi.byesNeeded) {
+        toast('Mark exactly ' + bi.byesNeeded + ' player(s) with a bye before generating', 'error');
+        return;
+      }
+      showConfirm('Generate bracket? Players will be randomly seeded. You cannot change the roster after this.', function() {
         apiCall('generateBracket', null, function(data) {
           toast(data.message, 'success');
           fetchState();
@@ -663,7 +751,7 @@
     }
 
     function resetTournament() {
-      confirm('Reset the tournament? All match results will be cleared. Players will be kept.', function() {
+      showConfirm('Reset the tournament? All match results will be cleared. Players will be kept, byes will be reset.', function() {
         apiCall('resetTournament', null, function(data) {
           toast(data.message, 'success');
           fetchState();
@@ -674,10 +762,9 @@
     function recordResult(matchId, winnerSlot) {
       var match = state.matches.find(function(m) { return m.matchId === matchId; });
       if (!match) return;
-
       var winnerName = (winnerSlot === '1') ? match.player1Name : match.player2Name;
 
-      confirm('Record ' + winnerName + ' as the winner of ' + matchId + '?', function() {
+      showConfirm('Record ' + winnerName + ' as the winner of ' + matchId + '?', function() {
         apiCall('recordResult', { matchId: matchId, winnerSlot: winnerSlot }, function(data) {
           toast(data.winner + ' wins ' + matchId, 'success');
           fetchState();
@@ -685,12 +772,11 @@
       });
     }
 
-    // =============================================
-    // RENDER
-    // =============================================
+    // --- RENDER ---
     function renderAll() {
       renderStatus();
       renderPlayers();
+      renderByeInfo();
       renderMatches();
     }
 
@@ -700,18 +786,40 @@
       badge.textContent = status.toUpperCase();
       badge.className = 'status-badge status-' + status;
 
-      // Toggle form visibility based on status
       var form = document.getElementById('addPlayerForm');
       var isSetup = (status === 'setup');
       form.style.display = isSetup ? 'flex' : 'none';
 
-      document.getElementById('btnGenerate').disabled = !isSetup || state.players.length < 2;
+      var bi = state.byeInfo || {};
+      var byesOk = bi.byesNeeded === 0 || bi.byesAssigned === bi.byesNeeded;
+      document.getElementById('btnGenerate').disabled = !isSetup || !state.players || state.players.length < 2 || !byesOk;
+    }
+
+    function renderByeInfo() {
+      var el = document.getElementById('byeInfo');
+      var bi = state.byeInfo || {};
+      var isSetup = (!state.settings.tournament_status || state.settings.tournament_status === 'setup');
+
+      if (!isSetup || !state.players || state.players.length < 2 || bi.byesNeeded === 0) {
+        el.classList.add('hidden');
+        return;
+      }
+
+      el.classList.remove('hidden');
+
+      document.getElementById('byeNeeded').textContent = bi.byesNeeded + ' bye' + (bi.byesNeeded !== 1 ? 's' : '') + ' needed (bracket size ' + bi.bracketSize + ')';
+
+      var countEl = document.getElementById('byeCount');
+      countEl.textContent = bi.byesAssigned + ' / ' + bi.byesNeeded + ' assigned';
+      countEl.className = 'bye-count ' + (bi.byesAssigned === bi.byesNeeded ? 'ok' : 'mismatch');
     }
 
     function renderPlayers() {
       var list = document.getElementById('playerList');
       var count = document.getElementById('playerCount');
       var isSetup = (!state.settings.tournament_status || state.settings.tournament_status === 'setup');
+      var bi = state.byeInfo || {};
+      var showByeCheckbox = isSetup && bi.byesNeeded > 0;
 
       if (!state.players || state.players.length === 0) {
         list.innerHTML = '<p style="color: var(--text-muted); padding: 20px 24px; font-size: 13px;">No players yet.</p>';
@@ -722,13 +830,25 @@
       var html = '';
       state.players.forEach(function(p) {
         html += '<div class="player-item">';
-        html += '  <div class="player-info">';
-        html += '    <span class="player-name">' + esc(p.name) + '</span>';
-        html += '    <span class="player-torn-id"><a href="https://www.torn.com/profiles.php?XID=' + esc(p.tornId) + '" target="_blank" rel="noopener">#' + esc(p.tornId) + '</a></span>';
-        html += '  </div>';
-        if (isSetup) {
-          html += '  <button class="btn-remove" onclick="removePlayer(\'' + esc(p.tornId) + '\')">x</button>';
+
+        if (showByeCheckbox) {
+          html += '<input type="checkbox" class="bye-toggle" ' + (p.bye ? 'checked' : '') + ' onclick="toggleBye(\'' + esc(p.tornId) + '\')" title="Toggle bye">';
         }
+
+        html += '<div class="player-info">';
+        html += '  <span class="player-name">' + esc(p.name) + '</span>';
+        html += '  <div class="player-meta">';
+        html += '    <span class="player-torn-id"><a href="https://www.torn.com/profiles.php?XID=' + esc(p.tornId) + '" target="_blank" rel="noopener">#' + esc(p.tornId) + '</a></span>';
+        if (p.bye) {
+          html += '    <span class="player-bye-label">BYE</span>';
+        }
+        html += '  </div>';
+        html += '</div>';
+
+        if (isSetup) {
+          html += '<button class="btn-remove" onclick="removePlayer(\'' + esc(p.tornId) + '\')">x</button>';
+        }
+
         html += '</div>';
       });
 
@@ -746,7 +866,6 @@
 
       var html = '';
 
-      // Champion banner
       if (state.settings.tournament_status === 'complete' && state.settings.champion) {
         html += '<div class="champion-banner">';
         html += '  <h3>Tournament Champion</h3>';
@@ -754,12 +873,10 @@
         html += '</div>';
       }
 
-      // Group matches by bracket
       var winners = state.matches.filter(function(m) { return m.bracket === 'winners'; });
       var losers = state.matches.filter(function(m) { return m.bracket === 'losers'; });
       var gf = state.matches.filter(function(m) { return m.bracket === 'grand_finals'; });
 
-      // Sort by round then match number
       var sortFn = function(a, b) {
         if (a.round !== b.round) return a.round - b.round;
         return a.match - b.match;
@@ -769,42 +886,16 @@
       losers.sort(sortFn);
       gf.sort(sortFn);
 
-      // Only show "ready" matches first, then others
-      html += renderMatchSection('Winners Bracket', winners);
-      if (losers.length > 0) {
-        html += renderMatchSection('Losers Bracket', losers);
-      }
-      if (gf.length > 0) {
-        html += renderMatchSection('Grand Finals', gf);
-      }
+      if (winners.length > 0) html += renderMatchSection('Winners Bracket', winners);
+      if (losers.length > 0) html += renderMatchSection('Losers Bracket', losers);
+      if (gf.length > 0) html += renderMatchSection('Grand Finals', gf);
 
       container.innerHTML = html;
     }
 
     function renderMatchSection(title, matches) {
-      // Filter out bye-only matches for cleaner display
-      var visible = matches.filter(function(m) {
-        return m.status !== 'bye';
-      });
-
-      if (visible.length === 0) return '';
-
       var html = '<div class="section-title">' + title + '</div>';
-
-      // Group by round
-      var rounds = {};
-      visible.forEach(function(m) {
-        var key = 'Round ' + m.round;
-        if (!rounds[key]) rounds[key] = [];
-        rounds[key].push(m);
-      });
-
-      Object.keys(rounds).forEach(function(roundKey) {
-        rounds[roundKey].forEach(function(m) {
-          html += renderMatchCard(m);
-        });
-      });
-
+      matches.forEach(function(m) { html += renderMatchCard(m); });
       return html;
     }
 
@@ -815,24 +906,14 @@
       var p2IsWinner = isComplete && m.winnerName === m.player2Name;
 
       var html = '<div class="match-card">';
-
-      // Header
       html += '<div class="match-header">';
       html += '  <span class="match-id">' + esc(m.matchId) + '</span>';
       html += '  <span class="match-status match-status-' + m.status + '">' + m.status + '</span>';
       html += '</div>';
-
-      // Body
       html += '<div class="match-body">';
-
-      // Player 1
       html += renderMatchPlayer(m, '1', m.player1Name, m.player1TornID, isReady, p1IsWinner, isComplete && !p1IsWinner);
-
       html += '<span class="match-vs">vs</span>';
-
-      // Player 2
       html += renderMatchPlayer(m, '2', m.player2Name, m.player2TornID, isReady, p2IsWinner, isComplete && !p2IsWinner);
-
       html += '</div></div>';
       return html;
     }
@@ -843,7 +924,6 @@
       if (isLoser) cls += ' loser-highlight';
 
       var html = '<div class="' + cls + '">';
-
       if (!name) {
         html += '<span class="match-player-name tbd">TBD</span>';
       } else if (name === 'BYE') {
@@ -860,9 +940,7 @@
       return html;
     }
 
-    // =============================================
-    // UI HELPERS
-    // =============================================
+    // --- UI HELPERS ---
     function showLoading(show) {
       document.getElementById('loading').classList.toggle('hidden', !show);
     }
@@ -876,7 +954,7 @@
       setTimeout(function() { el.remove(); }, 3000);
     }
 
-    function confirm(message, onConfirm) {
+    function showConfirm(message, onConfirm) {
       var overlay = document.getElementById('confirmOverlay');
       document.getElementById('confirmMessage').textContent = message;
       overlay.classList.remove('hidden');
