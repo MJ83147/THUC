@@ -26,9 +26,9 @@
       --font-mono: 'JetBrains Mono', monospace;
       --font-body: 'DM Sans', sans-serif;
 
-      --match-w: 200px;
+      --match-w: 210px;
       --match-h: 72px;
-      --round-gap: 48px;
+      --round-gap: 56px;
       --connector-color: #2e333d;
     }
 
@@ -134,7 +134,7 @@
     }
 
     .bracket-section {
-      margin-bottom: 48px;
+      margin-bottom: 56px;
     }
 
     .bracket-section:last-child { margin-bottom: 0; }
@@ -150,7 +150,7 @@
       padding-left: 4px;
     }
 
-    /* --- BRACKET ROUNDS --- */
+    /* --- BRACKET ROUNDS (desktop) --- */
     .bracket-rounds {
       display: flex;
       align-items: stretch;
@@ -191,7 +191,7 @@
       border: 1px solid var(--border);
       border-radius: 5px;
       overflow: hidden;
-      margin: 6px 0;
+      margin: 8px 0;
       position: relative;
     }
 
@@ -230,14 +230,6 @@
 
     .match-slot.is-loser {
       opacity: 0.4;
-    }
-
-    .match-slot-seed {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-dim);
-      min-width: 14px;
     }
 
     .match-slot-name {
@@ -300,15 +292,71 @@
       font-size: 12px;
     }
 
-    /* --- RESPONSIVE --- */
+    /* --- MOBILE: stacked list view --- */
     @media (max-width: 768px) {
-      :root {
-        --match-w: 160px;
-        --round-gap: 32px;
+      .header {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
       }
-      .header { padding: 16px 20px; }
-      .bracket-wrapper { padding: 20px; }
-      .champion-name { font-size: 24px; }
+
+      .header h1 { font-size: 15px; }
+
+      .champion-banner { padding: 20px 16px; }
+      .champion-name { font-size: 22px; }
+
+      .bracket-wrapper { padding: 16px; }
+      .bracket-section { margin-bottom: 32px; }
+
+      .bracket-title {
+        font-size: 10px;
+        margin-bottom: 12px;
+      }
+
+      /* Hide SVG connectors on mobile */
+      .connector-svg { display: none; }
+
+      /* Switch to vertical stacked layout */
+      .bracket-rounds {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .bracket-round {
+        min-width: unset;
+        padding-right: 0;
+        margin-bottom: 4px;
+        justify-content: flex-start;
+      }
+
+      .round-label {
+        position: static;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 8px;
+        margin-top: 16px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .bracket-round:first-child .round-label {
+        margin-top: 0;
+      }
+
+      .match {
+        width: 100%;
+        margin: 4px 0;
+      }
+
+      .match-slot {
+        padding: 6px 10px;
+        min-height: 32px;
+      }
+
+      .match-slot-name { font-size: 13px; }
+      .match-id-label { font-size: 10px; padding: 5px 10px 0; }
     }
   </style>
 </head>
@@ -342,10 +390,15 @@
     // =============================================
     // CONFIG
     // =============================================
-    // PASTE YOUR APPS SCRIPT WEB APP URL BELOW
-var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548nqR1ZIUkorU-ndtON1Vm9_O1_h_zSJFd7_e-yk77tCHLQ/exec';    var POLL_INTERVAL = 15000;
+    var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548nqR1ZIUkorU-ndtON1Vm9_O1_h_zSJFd7_e-yk77tCHLQ/exec';
+    var POLL_INTERVAL = 15000;
     var pollTimer = null;
     var state = null;
+    var isMobile = window.innerWidth <= 768;
+
+    window.addEventListener('resize', function() {
+      isMobile = window.innerWidth <= 768;
+    });
 
     // =============================================
     // INIT
@@ -407,7 +460,6 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
     function renderBracket() {
       var wrapper = document.getElementById('bracketWrapper');
 
-      // Separate matches by bracket, filter out bye-resolved matches
       var winners = state.matches.filter(function(m) {
         return m.bracket === 'winners' && m.status !== 'bye';
       });
@@ -434,14 +486,14 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
 
       wrapper.innerHTML = html;
 
-      // Draw connectors after DOM update
-      requestAnimationFrame(function() {
-        drawAllConnectors();
-      });
+      if (!isMobile) {
+        requestAnimationFrame(function() {
+          drawAllConnectors();
+        });
+      }
     }
 
     function renderBracketSection(title, matches) {
-      // Group by round
       var rounds = {};
       matches.forEach(function(m) {
         var r = m.round;
@@ -449,23 +501,26 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
         rounds[r].push(m);
       });
 
-      // Sort rounds numerically
       var roundKeys = Object.keys(rounds).map(Number).sort(function(a, b) { return a - b; });
 
-      // Determine if we need to set height based on max matches in first round
-      var maxMatches = 0;
-      roundKeys.forEach(function(r) {
-        if (rounds[r].length > maxMatches) maxMatches = rounds[r].length;
-      });
+      // Find the max matches in any round (first round typically)
+      var firstRoundCount = rounds[roundKeys[0]] ? rounds[roundKeys[0]].length : 1;
 
-      // Calculate minimum height to give enough space
-      var minHeight = Math.max(maxMatches * 84, 120);
+      // Height per match slot: match card (~80px) + spacing
+      // Use the first round count to drive the height, with generous spacing
+      var matchSlotHeight = 100;
+      var minHeight = Math.max(firstRoundCount * matchSlotHeight, 150);
 
       var sectionId = title.replace(/\s+/g, '-').toLowerCase();
 
       var html = '<div class="bracket-section">';
       html += '<div class="bracket-title">' + esc(title) + '</div>';
-      html += '<div class="bracket-rounds" id="section-' + sectionId + '" style="min-height:' + minHeight + 'px; padding-top: 24px;">';
+
+      if (isMobile) {
+        html += '<div class="bracket-rounds" id="section-' + sectionId + '">';
+      } else {
+        html += '<div class="bracket-rounds" id="section-' + sectionId + '" style="min-height:' + minHeight + 'px; padding-top: 24px;">';
+      }
 
       roundKeys.forEach(function(r, idx) {
         var roundMatches = rounds[r];
@@ -546,13 +601,13 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
     }
 
     // =============================================
-    // SVG CONNECTORS
+    // SVG CONNECTORS (desktop only)
     // =============================================
     function drawAllConnectors() {
-      // Remove any existing SVGs
       document.querySelectorAll('.connector-svg').forEach(function(el) { el.remove(); });
 
-      // Draw connectors for each section
+      if (isMobile) return;
+
       var sections = document.querySelectorAll('.bracket-rounds');
       sections.forEach(function(section) {
         drawSectionConnectors(section);
@@ -575,10 +630,6 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
         var currentMatches = rounds[i].querySelectorAll('.match');
         var nextMatches = rounds[i + 1].querySelectorAll('.match');
 
-        // For standard brackets, every 2 matches in round i feed into 1 match in round i+1
-        // But in losers bracket, the pattern can be 1:1 as well
-        // We'll connect based on actual match advancement data
-
         currentMatches.forEach(function(matchEl) {
           var matchId = matchEl.getAttribute('data-match-id');
           var matchData = findMatch(matchId);
@@ -587,11 +638,9 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
           var winnerNext = matchData.winnerNextMatch;
           if (!winnerNext) return;
 
-          // Find the target match element in this section
           var targetEl = section.querySelector('[data-match-id="' + winnerNext + '"]');
           if (!targetEl) return;
 
-          // Calculate positions relative to section
           var fromRect = matchEl.getBoundingClientRect();
           var toRect = targetEl.getBoundingClientRect();
 
@@ -602,7 +651,6 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
 
           var midX = fromX + (toX - fromX) / 2;
 
-          // Draw three-segment connector: horizontal, vertical, horizontal
           addLine(svg, fromX, fromY, midX, fromY);
           addLine(svg, midX, fromY, midX, toY);
           addLine(svg, midX, toY, toX, toY);
@@ -637,11 +685,18 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548n
       return div.innerHTML;
     }
 
-    // Redraw connectors on resize
     var resizeTimeout;
     window.addEventListener('resize', function() {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(drawAllConnectors, 200);
+      var wasMobile = isMobile;
+      isMobile = window.innerWidth <= 768;
+
+      // Re-render if crossing the breakpoint, otherwise just redraw connectors
+      if (wasMobile !== isMobile) {
+        render();
+      } else {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(drawAllConnectors, 200);
+      }
     });
   </script>
 
