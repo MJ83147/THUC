@@ -140,26 +140,26 @@
     }
 
     .prize-pool-label {
-      font-family: var(--font-mono);
-      font-size: 9px;
+      font-family: var(--font-body);
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-dim);
+      letter-spacing: 1px;
+      color: var(--text-muted);
       margin-bottom: 4px;
     }
 
     .prize-pool-amount {
       font-family: var(--font-mono);
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
       color: var(--accent);
       letter-spacing: -0.5px;
     }
 
     .prize-pool-sub {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-body);
+      font-size: 11px;
       color: var(--text-dim);
       margin-top: 2px;
     }
@@ -167,23 +167,21 @@
     .prize-places {
       display: flex;
       align-items: stretch;
-      flex: 1;
     }
 
     .prize-place {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 14px 24px;
+      padding: 14px 28px;
       border-right: 1px solid var(--border);
-      flex: 1;
     }
 
     .prize-place:last-child { border-right: none; }
 
     .prize-place-rank {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-body);
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -196,16 +194,16 @@
 
     .prize-place-amount {
       font-family: var(--font-mono);
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--text);
     }
 
     .prize-place-pct {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-body);
+      font-size: 12px;
       color: var(--text-dim);
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
     .prize-info {
@@ -221,18 +219,18 @@
     }
 
     .prize-info-label {
-      font-family: var(--font-mono);
-      font-size: 9px;
+      font-family: var(--font-body);
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       color: var(--text-dim);
       margin-bottom: 2px;
     }
 
     .prize-info-value {
-      font-family: var(--font-mono);
-      font-size: 13px;
+      font-family: var(--font-body);
+      font-size: 14px;
       font-weight: 600;
       color: var(--text-muted);
     }
@@ -573,6 +571,7 @@
         padding: 10px 12px;
         align-items: center;
         text-align: center;
+        flex: 1;
       }
 
       .prize-place-amount { font-size: 13px; }
@@ -630,7 +629,7 @@
 <body>
 
   <header class="header">
-    <h1>TORN HEADS UP CHAMPIONSHIP</h1>
+    <h1>THUC POKER TOURNAMENT</h1>
     <div class="header-right">
       <button class="btn-rules" id="btnRules">Rules</button>
       <div class="live-dot" id="liveDot"></div>
@@ -642,23 +641,23 @@
   <div class="prize-strip">
     <div class="prize-pool-total">
       <div class="prize-pool-label">Prize Pool</div>
-      <div class="prize-pool-amount">$160M</div>
-      <div class="prize-pool-sub">Guaranteed</div>
+      <div class="prize-pool-amount" id="prizeTotal">$0</div>
+      <div class="prize-pool-sub" id="prizePlayerCount">0 players</div>
     </div>
     <div class="prize-places">
       <div class="prize-place">
         <div class="prize-place-rank gold">1st Place</div>
-        <div class="prize-place-amount">$80M</div>
+        <div class="prize-place-amount" id="prize1st">$0</div>
         <div class="prize-place-pct">50%</div>
       </div>
       <div class="prize-place">
         <div class="prize-place-rank silver">2nd Place</div>
-        <div class="prize-place-amount">$48M</div>
+        <div class="prize-place-amount" id="prize2nd">$0</div>
         <div class="prize-place-pct">30%</div>
       </div>
       <div class="prize-place">
         <div class="prize-place-rank bronze">3rd Place</div>
-        <div class="prize-place-amount">$32M</div>
+        <div class="prize-place-amount" id="prize3rd">$0</div>
         <div class="prize-place-pct">20%</div>
       </div>
     </div>
@@ -743,8 +742,8 @@
 
         <div class="modal-section">
           <div class="modal-section-title">Prize Distribution</div>
-          <p><strong>$160,000,000 guaranteed prize pool</strong> consisting of 100% of entry fees.</p>
-          <p>1st Place: <strong>$80M</strong> (50%) / 2nd Place: <strong>$48M</strong> (30%) / 3rd Place: <strong>$32M</strong> (20%)</p>
+          <p>The prize pool consists of <strong>100% of all entry fees</strong> ($20M per player).</p>
+          <p>1st Place: <strong>50%</strong> / 2nd Place: <strong>30%</strong> / 3rd Place: <strong>20%</strong></p>
           <p>Distribution may be adjusted based on participant count. More participants may mean more players finish in the money.</p>
         </div>
 
@@ -806,10 +805,31 @@
 
     // --- RENDER ---
     function render() {
-      if (!state || !state.matches || state.matches.length === 0) return;
+      renderPrizes();
       renderStatus();
       renderChampion();
-      renderBracket();
+      if (state && state.matches && state.matches.length > 0) {
+        renderBracket();
+      }
+    }
+
+    function formatMoney(amount) {
+      if (amount >= 1000000000) return '$' + (amount / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+      if (amount >= 1000000) return '$' + (amount / 1000000).toFixed(0) + 'M';
+      if (amount >= 1000) return '$' + (amount / 1000).toFixed(0) + 'K';
+      return '$' + amount;
+    }
+
+    function renderPrizes() {
+      var playerCount = (state && state.players) ? state.players.length : 0;
+      var buyIn = 20000000;
+      var pool = playerCount * buyIn;
+
+      document.getElementById('prizeTotal').textContent = formatMoney(pool);
+      document.getElementById('prizePlayerCount').textContent = playerCount + ' player' + (playerCount !== 1 ? 's' : '') + ' signed up';
+      document.getElementById('prize1st').textContent = formatMoney(Math.floor(pool * 0.5));
+      document.getElementById('prize2nd').textContent = formatMoney(Math.floor(pool * 0.3));
+      document.getElementById('prize3rd').textContent = formatMoney(Math.floor(pool * 0.2));
     }
 
     function renderStatus() {
