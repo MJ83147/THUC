@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poker Tournament Bracket</title>
+  <title>THUC Poker Tournament</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -13,6 +13,7 @@
       --bg: #0f1115;
       --surface: #1a1d24;
       --surface-2: #22262e;
+      --surface-3: #282c35;
       --border: #2e333d;
       --border-light: #3a404d;
       --text: #e2e4e9;
@@ -20,6 +21,7 @@
       --text-dim: #555963;
       --accent: #e8a832;
       --accent-dim: #c48a1a;
+      --accent-glow: rgba(232, 168, 50, 0.08);
       --red: #d94848;
       --green: #3dba6a;
       --green-dim: #2d9452;
@@ -27,7 +29,6 @@
       --font-body: 'DM Sans', sans-serif;
 
       --match-w: 210px;
-      --match-h: 72px;
       --round-gap: 56px;
       --connector-color: #2e333d;
     }
@@ -64,7 +65,27 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+    }
+
+    .btn-rules {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border-light);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-rules:hover {
+      border-color: var(--accent-dim);
+      color: var(--accent);
     }
 
     .status-badge {
@@ -100,6 +121,122 @@
       color: var(--text-dim);
     }
 
+    /* --- PRIZE STRIP --- */
+    .prize-strip {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .prize-pool-total {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 16px 28px;
+      border-right: 1px solid var(--border);
+      background: var(--accent-glow);
+      min-width: 180px;
+    }
+
+    .prize-pool-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .prize-pool-amount {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .prize-pool-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .prize-places {
+      display: flex;
+      align-items: stretch;
+      flex: 1;
+    }
+
+    .prize-place {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 14px 24px;
+      border-right: 1px solid var(--border);
+      flex: 1;
+    }
+
+    .prize-place:last-child { border-right: none; }
+
+    .prize-place-rank {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .prize-place-rank.gold { color: var(--accent); }
+    .prize-place-rank.silver { color: #a0a8b8; }
+    .prize-place-rank.bronze { color: #b87333; }
+
+    .prize-place-amount {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .prize-place-pct {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 1px;
+    }
+
+    .prize-info {
+      display: flex;
+      align-items: center;
+      padding: 14px 24px;
+      gap: 20px;
+    }
+
+    .prize-info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .prize-info-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    .prize-info-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
     /* --- CHAMPION BANNER --- */
     .champion-banner {
       padding: 32px;
@@ -133,10 +270,7 @@
       overflow-x: auto;
     }
 
-    .bracket-section {
-      margin-bottom: 56px;
-    }
-
+    .bracket-section { margin-bottom: 56px; }
     .bracket-section:last-child { margin-bottom: 0; }
 
     .bracket-title {
@@ -150,7 +284,7 @@
       padding-left: 4px;
     }
 
-    /* --- BRACKET ROUNDS (desktop) --- */
+    /* --- BRACKET ROUNDS --- */
     .bracket-rounds {
       display: flex;
       align-items: stretch;
@@ -195,13 +329,8 @@
       position: relative;
     }
 
-    .match.match-ready {
-      border-color: var(--border-light);
-    }
-
-    .match.match-complete {
-      border-color: var(--border);
-    }
+    .match.match-ready { border-color: var(--border-light); }
+    .match.match-complete { border-color: var(--border); }
 
     .match-id-label {
       font-family: var(--font-mono);
@@ -223,14 +352,8 @@
     }
 
     .match-slot:last-child { border-bottom: none; }
-
-    .match-slot.is-winner {
-      background: rgba(61, 186, 106, 0.08);
-    }
-
-    .match-slot.is-loser {
-      opacity: 0.4;
-    }
+    .match-slot.is-winner { background: rgba(61, 186, 106, 0.08); }
+    .match-slot.is-loser { opacity: 0.4; }
 
     .match-slot-name {
       font-size: 12px;
@@ -243,12 +366,7 @@
 
     .match-slot-name.bye { color: var(--text-dim); font-style: italic; }
     .match-slot-name.tbd { color: var(--text-dim); font-style: italic; }
-
-    .match-slot-name a {
-      color: inherit;
-      text-decoration: none;
-    }
-
+    .match-slot-name a { color: inherit; text-decoration: none; }
     .match-slot-name a:hover { color: var(--accent); }
 
     .winner-indicator {
@@ -270,10 +388,7 @@
       z-index: 1;
     }
 
-    .connector-svg line {
-      stroke: var(--connector-color);
-      stroke-width: 1.5;
-    }
+    .connector-svg line { stroke: var(--connector-color); stroke-width: 1.5; }
 
     /* --- EMPTY STATE --- */
     .empty-state {
@@ -282,17 +397,151 @@
       color: var(--text-dim);
     }
 
-    .empty-state p {
-      font-size: 15px;
-      margin-bottom: 8px;
+    .empty-state p { font-size: 15px; margin-bottom: 8px; }
+    .empty-state .sub { font-family: var(--font-mono); font-size: 12px; }
+
+    /* --- RULES MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
     }
 
-    .empty-state .sub {
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 85vh;
+      overflow-y: auto;
+      transform: translateY(12px);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 1;
+    }
+
+    .modal-header h2 {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
     }
 
-    /* --- MOBILE: stacked list view --- */
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .modal-close:hover { border-color: var(--border-light); color: var(--text); }
+
+    .modal-body { padding: 24px; }
+
+    .modal-section { margin-bottom: 24px; }
+    .modal-section:last-child { margin-bottom: 0; }
+
+    .modal-section-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-dim);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-body p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .modal-body p:last-child { margin-bottom: 0; }
+    .modal-body strong { color: var(--text); font-weight: 600; }
+
+    .rule-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .rule-item:last-child { margin-bottom: 0; }
+
+    .rule-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      min-width: 20px;
+      padding-top: 2px;
+    }
+
+    .rule-text strong { color: var(--text); }
+
+    .modal-warning {
+      background: rgba(217, 72, 72, 0.08);
+      border: 1px solid rgba(217, 72, 72, 0.2);
+      border-radius: 4px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--red);
+      margin-top: 12px;
+    }
+
+    .modal-highlight {
+      background: var(--accent-glow);
+      border: 1px solid rgba(232, 168, 50, 0.15);
+      border-radius: 4px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .modal-highlight strong { color: var(--accent); }
+
+    /* --- MOBILE --- */
     @media (max-width: 768px) {
       .header {
         padding: 14px 16px;
@@ -301,26 +550,49 @@
       }
 
       .header h1 { font-size: 15px; }
+      .header-right { gap: 8px; }
+      .btn-rules { font-size: 10px; padding: 5px 10px; }
+
+      .prize-strip { flex-direction: column; }
+
+      .prize-pool-total {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 14px 16px;
+        min-width: unset;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .prize-pool-amount { font-size: 18px; }
+
+      .prize-places { flex-direction: row; }
+
+      .prize-place {
+        padding: 10px 12px;
+        align-items: center;
+        text-align: center;
+      }
+
+      .prize-place-amount { font-size: 13px; }
+
+      .prize-info {
+        padding: 10px 16px;
+        gap: 16px;
+        border-top: 1px solid var(--border);
+      }
 
       .champion-banner { padding: 20px 16px; }
       .champion-name { font-size: 22px; }
 
       .bracket-wrapper { padding: 16px; }
       .bracket-section { margin-bottom: 32px; }
+      .bracket-title { font-size: 10px; margin-bottom: 12px; }
 
-      .bracket-title {
-        font-size: 10px;
-        margin-bottom: 12px;
-      }
-
-      /* Hide SVG connectors on mobile */
       .connector-svg { display: none; }
 
-      /* Switch to vertical stacked layout */
-      .bracket-rounds {
-        flex-direction: column;
-        gap: 0;
-      }
+      .bracket-rounds { flex-direction: column; gap: 0; }
 
       .bracket-round {
         min-width: unset;
@@ -341,44 +613,76 @@
         color: var(--text-muted);
       }
 
-      .bracket-round:first-child .round-label {
-        margin-top: 0;
-      }
+      .bracket-round:first-child .round-label { margin-top: 0; }
 
-      .match {
-        width: 100%;
-        margin: 4px 0;
-      }
-
-      .match-slot {
-        padding: 6px 10px;
-        min-height: 32px;
-      }
-
+      .match { width: 100%; margin: 4px 0; }
+      .match-slot { padding: 6px 10px; min-height: 32px; }
       .match-slot-name { font-size: 13px; }
       .match-id-label { font-size: 10px; padding: 5px 10px 0; }
+
+      .modal-overlay { padding: 12px; }
+      .modal { max-height: 90vh; }
+      .modal-header { padding: 16px; }
+      .modal-body { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="header">
-    <h1>Torn Heads-Up Championship</h1>
+    <h1>TORN HEADS UP CHAMPIONSHIP</h1>
     <div class="header-right">
+      <button class="btn-rules" id="btnRules">Rules</button>
       <div class="live-dot" id="liveDot"></div>
       <span class="refresh-label" id="refreshLabel">updating...</span>
       <span class="status-badge status-setup" id="statusBadge">SETUP</span>
     </div>
   </header>
 
-  <!-- CHAMPION BANNER -->
+  <div class="prize-strip">
+    <div class="prize-pool-total">
+      <div class="prize-pool-label">Prize Pool</div>
+      <div class="prize-pool-amount">$160M</div>
+      <div class="prize-pool-sub">Guaranteed</div>
+    </div>
+    <div class="prize-places">
+      <div class="prize-place">
+        <div class="prize-place-rank gold">1st Place</div>
+        <div class="prize-place-amount">$80M</div>
+        <div class="prize-place-pct">50%</div>
+      </div>
+      <div class="prize-place">
+        <div class="prize-place-rank silver">2nd Place</div>
+        <div class="prize-place-amount">$48M</div>
+        <div class="prize-place-pct">30%</div>
+      </div>
+      <div class="prize-place">
+        <div class="prize-place-rank bronze">3rd Place</div>
+        <div class="prize-place-amount">$32M</div>
+        <div class="prize-place-pct">20%</div>
+      </div>
+    </div>
+    <div class="prize-info">
+      <div class="prize-info-item">
+        <span class="prize-info-label">Format</span>
+        <span class="prize-info-value">1v1 Hold'em</span>
+      </div>
+      <div class="prize-info-item">
+        <span class="prize-info-label">Buy-in</span>
+        <span class="prize-info-value">$20M</span>
+      </div>
+      <div class="prize-info-item">
+        <span class="prize-info-label">Starts</span>
+        <span class="prize-info-value">March 1st</span>
+      </div>
+    </div>
+  </div>
+
   <div class="champion-banner hidden" id="championBanner">
     <div class="champion-label">Tournament Champion</div>
     <div class="champion-name" id="championName"></div>
   </div>
 
-  <!-- BRACKET -->
   <div class="bracket-wrapper" id="bracketWrapper">
     <div class="empty-state">
       <p>Waiting for tournament to begin</p>
@@ -386,31 +690,104 @@
     </div>
   </div>
 
+  <!-- RULES MODAL -->
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Tournament Rules</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="modal-section">
+          <div class="modal-section-title">Tournament Format</div>
+          <p>Heads-Up (1v1) Poker using Hold'em. Double Elimination format with Winners and Losers brackets, so one bad beat won't knock you out. Each match is played at a <strong>Duel at Dawn</strong> table with a $20M buy-in each side.</p>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Entry and Security Deposit</div>
+          <p><strong>Total entry: $40,000,000</strong> sent to the organiser with the message "THUC Tournament Entry".</p>
+          <p><strong>$20,000,000</strong> is your buy-in and goes directly to the prize pool.</p>
+          <p><strong>$20,000,000</strong> is a security deposit, held as a guarantee and fully refundable when you are eliminated from the tournament.</p>
+          <div class="modal-highlight">
+            <strong>Why the deposit?</strong> Since the match winner takes the loser's $20M on the poker table, the deposit ensures that if someone refuses to pay or leaves mid-game, the victim is fully compensated from the runner's deposit.
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Match Rules</div>
+          <div class="rule-item">
+            <span class="rule-num">01</span>
+            <span class="rule-text">The <strong>winner must return the $20M buy-in</strong> to the loser after the match.</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-num">02</span>
+            <span class="rule-text">Once the bracket is live, <strong>contact your opponent</strong> to set up the 1v1 table.</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-num">03</span>
+            <span class="rule-text"><strong>No mugging.</strong> Attacking your opponent during tournament matches is strictly prohibited. This includes organising mugs through other players.</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-num">04</span>
+            <span class="rule-text">You have <strong>48 hours</strong> to complete your match once the round starts.</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-num">05</span>
+            <span class="rule-text">The winner must <strong>send a screenshot of the Game Log</strong> or final result to the organiser.</span>
+          </div>
+          <div class="modal-warning">
+            Breaking any rule will result in disqualification with potential loss of deposit and a ban from future tournaments.
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Prize Distribution</div>
+          <p><strong>$160,000,000 guaranteed prize pool</strong> consisting of 100% of entry fees.</p>
+          <p>1st Place: <strong>$80M</strong> (50%) / 2nd Place: <strong>$48M</strong> (30%) / 3rd Place: <strong>$32M</strong> (20%)</p>
+          <p>Distribution may be adjusted based on participant count. More participants may mean more players finish in the money.</p>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Donations</div>
+          <p>Donations of cash or items (to be auctioned or sold for the pot) are welcome and will grow the prize pool. All donors will be publicly thanked. If you want to donate to the organising team or volunteer to help organise, get in touch.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script>
-    // =============================================
-    // CONFIG
-    // =============================================
     var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548nqR1ZIUkorU-ndtON1Vm9_O1_h_zSJFd7_e-yk77tCHLQ/exec';
     var POLL_INTERVAL = 15000;
     var pollTimer = null;
     var state = null;
     var isMobile = window.innerWidth <= 768;
 
-    window.addEventListener('resize', function() {
-      isMobile = window.innerWidth <= 768;
+    // --- MODAL ---
+    document.getElementById('btnRules').addEventListener('click', function() {
+      document.getElementById('rulesModal').classList.add('open');
     });
 
-    // =============================================
-    // INIT
-    // =============================================
+    document.getElementById('modalClose').addEventListener('click', function() {
+      document.getElementById('rulesModal').classList.remove('open');
+    });
+
+    document.getElementById('rulesModal').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') document.getElementById('rulesModal').classList.remove('open');
+    });
+
+    // --- INIT ---
     document.addEventListener('DOMContentLoaded', function() {
       fetchState();
       pollTimer = setInterval(fetchState, POLL_INTERVAL);
     });
 
-    // =============================================
-    // DATA
-    // =============================================
+    // --- DATA ---
     function fetchState() {
       var label = document.getElementById('refreshLabel');
       label.textContent = 'updating...';
@@ -427,12 +804,9 @@
         });
     }
 
-    // =============================================
-    // RENDER
-    // =============================================
+    // --- RENDER ---
     function render() {
       if (!state || !state.matches || state.matches.length === 0) return;
-
       renderStatus();
       renderChampion();
       renderBracket();
@@ -448,7 +822,6 @@
     function renderChampion() {
       var banner = document.getElementById('championBanner');
       var name = document.getElementById('championName');
-
       if (state.settings.tournament_status === 'complete' && state.settings.champion) {
         name.textContent = state.settings.champion;
         banner.classList.remove('hidden');
@@ -460,36 +833,19 @@
     function renderBracket() {
       var wrapper = document.getElementById('bracketWrapper');
 
-      var winners = state.matches.filter(function(m) {
-        return m.bracket === 'winners' && m.status !== 'bye';
-      });
-      var losers = state.matches.filter(function(m) {
-        return m.bracket === 'losers' && m.status !== 'bye';
-      });
-      var gf = state.matches.filter(function(m) {
-        return m.bracket === 'grand_finals';
-      });
+      var winners = state.matches.filter(function(m) { return m.bracket === 'winners' && m.status !== 'bye'; });
+      var losers = state.matches.filter(function(m) { return m.bracket === 'losers' && m.status !== 'bye'; });
+      var gf = state.matches.filter(function(m) { return m.bracket === 'grand_finals'; });
 
       var html = '';
-
-      if (winners.length > 0) {
-        html += renderBracketSection('Winners Bracket', winners);
-      }
-
-      if (losers.length > 0) {
-        html += renderBracketSection('Losers Bracket', losers);
-      }
-
-      if (gf.length > 0) {
-        html += renderBracketSection('Grand Finals', gf);
-      }
+      if (winners.length > 0) html += renderBracketSection('Winners Bracket', winners);
+      if (losers.length > 0) html += renderBracketSection('Losers Bracket', losers);
+      if (gf.length > 0) html += renderBracketSection('Grand Finals', gf);
 
       wrapper.innerHTML = html;
 
       if (!isMobile) {
-        requestAnimationFrame(function() {
-          drawAllConnectors();
-        });
+        requestAnimationFrame(function() { drawAllConnectors(); });
       }
     }
 
@@ -502,15 +858,8 @@
       });
 
       var roundKeys = Object.keys(rounds).map(Number).sort(function(a, b) { return a - b; });
-
-      // Find the max matches in any round (first round typically)
       var firstRoundCount = rounds[roundKeys[0]] ? rounds[roundKeys[0]].length : 1;
-
-      // Height per match slot: match card (~80px) + spacing
-      // Use the first round count to drive the height, with generous spacing
-      var matchSlotHeight = 100;
-      var minHeight = Math.max(firstRoundCount * matchSlotHeight, 150);
-
+      var minHeight = Math.max(firstRoundCount * 100, 150);
       var sectionId = title.replace(/\s+/g, '-').toLowerCase();
 
       var html = '<div class="bracket-section">';
@@ -525,16 +874,11 @@
       roundKeys.forEach(function(r, idx) {
         var roundMatches = rounds[r];
         roundMatches.sort(function(a, b) { return a.match - b.match; });
-
         var roundLabel = getRoundLabel(title, r, roundKeys.length, idx);
 
         html += '<div class="bracket-round" data-section="' + sectionId + '" data-round="' + r + '">';
         html += '<div class="round-label">' + roundLabel + '</div>';
-
-        roundMatches.forEach(function(m) {
-          html += renderMatch(m);
-        });
-
+        roundMatches.forEach(function(m) { html += renderMatch(m); });
         html += '</div>';
       });
 
@@ -543,9 +887,7 @@
     }
 
     function getRoundLabel(sectionTitle, round, totalRounds, idx) {
-      if (sectionTitle === 'Grand Finals') {
-        return round === 1 ? 'Grand Final' : 'Reset';
-      }
+      if (sectionTitle === 'Grand Finals') return round === 1 ? 'Grand Final' : 'Reset';
       if (sectionTitle === 'Winners Bracket') {
         if (idx === totalRounds - 1) return 'WB Final';
         if (idx === totalRounds - 2) return 'WB Semi';
@@ -582,7 +924,6 @@
       if (isLoser) cls += ' is-loser';
 
       var html = '<div class="' + cls + '">';
-
       if (!name) {
         html += '<span class="match-slot-name tbd">TBD</span>';
       } else if (name === 'BYE') {
@@ -591,25 +932,16 @@
         var profileUrl = 'https://www.torn.com/profiles.php?XID=' + esc(tornId);
         html += '<span class="match-slot-name"><a href="' + profileUrl + '" target="_blank" rel="noopener">' + esc(name) + '</a></span>';
       }
-
-      if (isWinner) {
-        html += '<div class="winner-indicator"></div>';
-      }
-
+      if (isWinner) html += '<div class="winner-indicator"></div>';
       html += '</div>';
       return html;
     }
 
-    // =============================================
-    // SVG CONNECTORS (desktop only)
-    // =============================================
+    // --- SVG CONNECTORS ---
     function drawAllConnectors() {
       document.querySelectorAll('.connector-svg').forEach(function(el) { el.remove(); });
-
       if (isMobile) return;
-
-      var sections = document.querySelectorAll('.bracket-rounds');
-      sections.forEach(function(section) {
+      document.querySelectorAll('.bracket-rounds').forEach(function(section) {
         drawSectionConnectors(section);
       });
     }
@@ -619,7 +951,6 @@
       if (rounds.length < 2) return;
 
       var sectionRect = section.getBoundingClientRect();
-
       var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.classList.add('connector-svg');
       svg.setAttribute('width', sectionRect.width);
@@ -627,10 +958,7 @@
       section.appendChild(svg);
 
       for (var i = 0; i < rounds.length - 1; i++) {
-        var currentMatches = rounds[i].querySelectorAll('.match');
-        var nextMatches = rounds[i + 1].querySelectorAll('.match');
-
-        currentMatches.forEach(function(matchEl) {
+        rounds[i].querySelectorAll('.match').forEach(function(matchEl) {
           var matchId = matchEl.getAttribute('data-match-id');
           var matchData = findMatch(matchId);
           if (!matchData) return;
@@ -648,7 +976,6 @@
           var fromY = fromRect.top + fromRect.height / 2 - sectionRect.top;
           var toX = toRect.left - sectionRect.left;
           var toY = toRect.top + toRect.height / 2 - sectionRect.top;
-
           var midX = fromX + (toX - fromX) / 2;
 
           addLine(svg, fromX, fromY, midX, fromY);
@@ -675,9 +1002,6 @@
       return null;
     }
 
-    // =============================================
-    // HELPERS
-    // =============================================
     function esc(str) {
       if (!str) return '';
       var div = document.createElement('div');
@@ -689,8 +1013,6 @@
     window.addEventListener('resize', function() {
       var wasMobile = isMobile;
       isMobile = window.innerWidth <= 768;
-
-      // Re-render if crossing the breakpoint, otherwise just redraw connectors
       if (wasMobile !== isMobile) {
         render();
       } else {
