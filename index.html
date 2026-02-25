@@ -237,6 +237,24 @@
       color: var(--text-muted);
     }
 
+    .prize-info-value.clickable {
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .prize-info-value.clickable:hover {
+      color: var(--accent);
+    }
+
+    .prize-info-value .donor-link {
+      border-bottom: 1px dashed var(--border-light);
+      padding-bottom: 1px;
+    }
+
+    .prize-info-value.clickable:hover .donor-link {
+      border-bottom-color: var(--accent);
+    }
+
     /* --- CHAMPION BANNER --- */
     .champion-banner {
       padding: 32px;
@@ -400,7 +418,7 @@
     .empty-state p { font-size: 15px; margin-bottom: 8px; }
     .empty-state .sub { font-family: var(--font-mono); font-size: 12px; }
 
-    /* --- RULES MODAL --- */
+    /* --- MODAL (shared between rules and donors) --- */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -541,6 +559,61 @@
 
     .modal-highlight strong { color: var(--accent); }
 
+    /* --- DONOR LIST IN MODAL --- */
+    .donor-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .donor-list-item:last-child { border-bottom: none; }
+
+    .donor-list-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .donor-list-amount {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .donor-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0 0;
+      margin-top: 4px;
+    }
+
+    .donor-total-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .donor-total-amount {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .donor-empty {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 12px 0;
+      text-align: center;
+    }
+
     /* --- MOBILE --- */
     @media (max-width: 768px) {
       .header {
@@ -582,6 +655,7 @@
         padding: 10px 16px;
         gap: 16px;
         border-top: 1px solid var(--border);
+        flex-wrap: wrap;
       }
 
       .champion-banner { padding: 20px 16px; }
@@ -644,7 +718,7 @@
     <div class="prize-pool-total">
       <div class="prize-pool-label">Prize Pool</div>
       <div class="prize-pool-amount" id="prizeTotal">$0</div>
-      <div class="prize-pool-sub" id="prizePlayerCount">0 players</div>
+      <div class="prize-pool-sub" id="prizePoolBreakdown">0 players</div>
     </div>
     <div class="prize-places">
       <div class="prize-place">
@@ -665,8 +739,16 @@
     </div>
     <div class="prize-info">
       <div class="prize-info-item">
-        <span class="prize-info-label">Format</span>
-        <span class="prize-info-value">1v1 Hold'em</span>
+        <span class="prize-info-label">Players</span>
+        <span class="prize-info-value" id="infoPlayers">0</span>
+      </div>
+      <div class="prize-info-item">
+        <span class="prize-info-label">Donors</span>
+        <span class="prize-info-value clickable" id="infoDonors" title="View donor list"><span class="donor-link">0</span></span>
+      </div>
+      <div class="prize-info-item">
+        <span class="prize-info-label">Donated</span>
+        <span class="prize-info-value" id="infoDonationTotal">$0</span>
       </div>
       <div class="prize-info-item">
         <span class="prize-info-label">Buy-in</span>
@@ -696,7 +778,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2>Tournament Rules</h2>
-        <button class="modal-close" id="modalClose">&times;</button>
+        <button class="modal-close" onclick="closeModal('rulesModal')">&times;</button>
       </div>
       <div class="modal-body">
 
@@ -744,7 +826,7 @@
 
         <div class="modal-section">
           <div class="modal-section-title">Prize Distribution</div>
-          <p>The prize pool consists of <strong>100% of all entry fees</strong> ($20M per player).</p>
+          <p>The prize pool consists of <strong>100% of all entry fees</strong> ($20M per player) plus any donations.</p>
           <p>1st Place: <strong>50%</strong> / 2nd Place: <strong>30%</strong> / 3rd Place: <strong>20%</strong></p>
           <p>Distribution may be adjusted based on participant count. More participants may mean more players finish in the money.</p>
         </div>
@@ -758,6 +840,19 @@
     </div>
   </div>
 
+  <!-- DONORS MODAL -->
+  <div class="modal-overlay" id="donorsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Donors</h2>
+        <button class="modal-close" onclick="closeModal('donorsModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="donorsModalBody">
+        <div class="donor-empty">No donations yet.</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548nqR1ZIUkorU-ndtON1Vm9_O1_h_zSJFd7_e-yk77tCHLQ/exec';
     var POLL_INTERVAL = 15000;
@@ -765,21 +860,36 @@
     var state = null;
     var isMobile = window.innerWidth <= 768;
 
-    // --- MODAL ---
+    // --- MODALS ---
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
     document.getElementById('btnRules').addEventListener('click', function() {
-      document.getElementById('rulesModal').classList.add('open');
+      openModal('rulesModal');
     });
 
-    document.getElementById('modalClose').addEventListener('click', function() {
-      document.getElementById('rulesModal').classList.remove('open');
+    document.getElementById('infoDonors').addEventListener('click', function() {
+      renderDonorsModal();
+      openModal('donorsModal');
     });
 
-    document.getElementById('rulesModal').addEventListener('click', function(e) {
-      if (e.target === this) this.classList.remove('open');
+    document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+      });
     });
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') document.getElementById('rulesModal').classList.remove('open');
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
+          m.classList.remove('open');
+        });
+      }
     });
 
     // --- INIT ---
@@ -797,6 +907,7 @@
         .then(function(res) { return res.json(); })
         .then(function(data) {
           state = data;
+          if (!state.donations) state.donations = [];
           render();
           label.textContent = 'live';
         })
@@ -816,22 +927,46 @@
     }
 
     function formatMoney(amount) {
+      if (!amount) return '$0';
       if (amount >= 1000000000) return '$' + (amount / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
       if (amount >= 1000000) return '$' + (amount / 1000000).toFixed(0) + 'M';
       if (amount >= 1000) return '$' + (amount / 1000).toFixed(0) + 'K';
       return '$' + amount;
     }
 
+    function getDonationTotal() {
+      var donations = (state && state.donations) ? state.donations : [];
+      var total = 0;
+      donations.forEach(function(d) { total += (d.amount || 0); });
+      return total;
+    }
+
     function renderPrizes() {
       var playerCount = (state && state.players) ? state.players.length : 0;
+      var donations = (state && state.donations) ? state.donations : [];
       var buyIn = 20000000;
-      var pool = playerCount * buyIn;
+      var playerPool = playerCount * buyIn;
+      var donationTotal = getDonationTotal();
+      var pool = playerPool + donationTotal;
 
       document.getElementById('prizeTotal').textContent = formatMoney(pool);
-      document.getElementById('prizePlayerCount').textContent = playerCount + ' player' + (playerCount !== 1 ? 's' : '') + ' signed up';
+
+      // Breakdown sub-text
+      var breakdownParts = [];
+      breakdownParts.push(formatMoney(playerPool) + ' from buy-ins');
+      if (donationTotal > 0) {
+        breakdownParts.push(formatMoney(donationTotal) + ' donated');
+      }
+      document.getElementById('prizePoolBreakdown').textContent = breakdownParts.join(' + ');
+
       document.getElementById('prize1st').textContent = formatMoney(Math.floor(pool * 0.5));
       document.getElementById('prize2nd').textContent = formatMoney(Math.floor(pool * 0.3));
       document.getElementById('prize3rd').textContent = formatMoney(Math.floor(pool * 0.2));
+
+      // Info items
+      document.getElementById('infoPlayers').textContent = playerCount;
+      document.getElementById('infoDonors').querySelector('.donor-link').textContent = donations.length;
+      document.getElementById('infoDonationTotal').textContent = formatMoney(donationTotal);
     }
 
     function renderStatus() {
@@ -850,6 +985,34 @@
       } else {
         banner.classList.add('hidden');
       }
+    }
+
+    function renderDonorsModal() {
+      var body = document.getElementById('donorsModalBody');
+      var donations = (state && state.donations) ? state.donations : [];
+
+      if (donations.length === 0) {
+        body.innerHTML = '<div class="donor-empty">No donations yet. Contributions of cash or items are welcome and grow the prize pool.</div>';
+        return;
+      }
+
+      var html = '';
+      var total = 0;
+
+      donations.forEach(function(d) {
+        total += (d.amount || 0);
+        html += '<div class="donor-list-item">';
+        html += '  <span class="donor-list-name">' + esc(d.donorName) + '</span>';
+        html += '  <span class="donor-list-amount">' + formatMoney(d.amount) + '</span>';
+        html += '</div>';
+      });
+
+      html += '<div class="donor-total-row">';
+      html += '  <span class="donor-total-label">Total Donated</span>';
+      html += '  <span class="donor-total-amount">' + formatMoney(total) + '</span>';
+      html += '</div>';
+
+      body.innerHTML = html;
     }
 
     function renderBracket() {
