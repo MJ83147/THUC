@@ -210,14 +210,15 @@
 
     .prize-info {
       display: flex;
-      align-items: center;
-      padding: 12px 28px;
-      gap: 24px;
+      align-items: stretch;
     }
 
     .prize-info-item {
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      padding: 12px 28px;
+      border-left: 1px solid var(--border);
     }
 
     .prize-info-label {
@@ -231,10 +232,10 @@
     }
 
     .prize-info-value {
-      font-family: var(--font-body);
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
     }
 
     .prize-info-value.clickable {
@@ -652,11 +653,17 @@
       .prize-place-amount { font-size: 13px; }
 
       .prize-info {
-        padding: 10px 16px;
-        gap: 16px;
-        border-top: 1px solid var(--border);
         flex-wrap: wrap;
+        border-top: 1px solid var(--border);
       }
+
+      .prize-info-item {
+        padding: 10px 16px;
+        border-left: none;
+        border-right: 1px solid var(--border);
+      }
+
+      .prize-info-value { font-size: 14px; }
 
       .champion-banner { padding: 20px 16px; }
       .champion-name { font-size: 22px; }
