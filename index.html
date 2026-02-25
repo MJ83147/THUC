@@ -348,7 +348,7 @@
       position: relative;
     }
 
-    .match.match-ready { border-color: var(--border-light); }
+    .match.match-ready { border-color: var(--accent-dim); box-shadow: 0 0 0 1px var(--accent-dim); }
     .match.match-complete { border-color: var(--border); }
 
     .match-id-label {
@@ -613,6 +613,26 @@
       color: var(--text-dim);
       padding: 12px 0;
       text-align: center;
+    }
+
+    /* --- FOOTER --- */
+    .site-footer {
+      padding: 20px 32px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .site-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .site-footer a:hover {
+      color: var(--accent);
     }
 
     /* --- MOBILE --- */
@@ -1213,6 +1233,10 @@
       }
     });
   </script>
+
+  <footer class="site-footer">
+    Made by <a href="https://www.torn.com/profiles.php?XID=3583736" target="_blank" rel="noopener">Systoned</a>
+  </footer>
 
 </body>
 </html>
