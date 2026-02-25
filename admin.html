@@ -84,6 +84,10 @@
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
 
     .sidebar-header {
@@ -175,6 +179,7 @@
       flex: 1;
       overflow-y: auto;
       padding: 4px 0;
+      min-height: 0;
     }
 
     .player-item {
@@ -284,16 +289,22 @@
       font-family: var(--font-mono);
       font-size: 12px;
       color: var(--text-muted);
+      flex-shrink: 0;
     }
 
     /* --- DONATIONS SECTION --- */
     .donations-section {
       border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      max-height: 280px;
     }
 
     .donations-header {
       padding: 20px 24px 16px;
       border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
     }
 
     .donations-header h2 {
@@ -334,9 +345,10 @@
     .add-donation-row input:last-child { flex: 1; }
 
     .donation-list {
-      max-height: 200px;
+      flex: 1;
       overflow-y: auto;
       padding: 4px 0;
+      min-height: 0;
     }
 
     .donation-item {
@@ -378,6 +390,7 @@
       color: var(--text-muted);
       display: flex;
       justify-content: space-between;
+      flex-shrink: 0;
     }
 
     .donation-total-amount {
@@ -389,6 +402,7 @@
     .panel {
       display: flex;
       flex-direction: column;
+      min-height: calc(100vh - 73px);
     }
 
     .panel-toolbar {
@@ -432,7 +446,6 @@
     /* --- MATCH LIST --- */
     .match-sections {
       flex: 1;
-      overflow-y: auto;
       padding: 16px 24px 32px;
     }
 
@@ -651,7 +664,7 @@
     /* --- RESPONSIVE --- */
     @media (max-width: 768px) {
       .main { grid-template-columns: 1fr; }
-      .sidebar { border-right: none; border-bottom: 1px solid var(--border); max-height: 50vh; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--border); position: static; height: auto; max-height: 60vh; }
       .header { padding: 16px 20px; }
       .sidebar-header { padding: 16px 20px 12px; }
       .player-item { padding: 10px 20px; }
@@ -662,6 +675,8 @@
       .donation-item { padding: 8px 20px; }
       .donations-header { padding: 16px 20px 12px; }
       .donation-total { padding: 10px 20px; }
+      .donations-section { max-height: none; }
+      .panel { min-height: auto; }
     }
   </style>
 </head>
