@@ -615,28 +615,20 @@
       text-align: center;
     }
 
-    /* --- PODIUM --- */
-    .results-section {
-      border-bottom: 1px solid var(--border);
-      padding: 40px 32px 32px;
-      display: none;
-    }
-
-    .results-section.visible { display: block; }
-
+    /* --- PODIUM (inside modal) --- */
     .podium {
       display: flex;
       justify-content: center;
       align-items: flex-end;
       gap: 4px;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
 
     .podium-place {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 180px;
+      width: 160px;
     }
 
     .podium-rank {
@@ -654,7 +646,7 @@
 
     .podium-player-name {
       font-family: var(--font-body);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
       margin-bottom: 4px;
@@ -670,7 +662,7 @@
 
     .podium-prize {
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       margin-bottom: 10px;
     }
@@ -685,21 +677,21 @@
     }
 
     .podium-1st .podium-bar {
-      height: 120px;
+      height: 100px;
       background: linear-gradient(180deg, rgba(232, 168, 50, 0.25) 0%, rgba(232, 168, 50, 0.06) 100%);
       border: 1px solid rgba(232, 168, 50, 0.3);
       border-bottom: none;
     }
 
     .podium-2nd .podium-bar {
-      height: 85px;
+      height: 70px;
       background: linear-gradient(180deg, rgba(160, 168, 184, 0.18) 0%, rgba(160, 168, 184, 0.04) 100%);
       border: 1px solid rgba(160, 168, 184, 0.2);
       border-bottom: none;
     }
 
     .podium-3rd .podium-bar {
-      height: 60px;
+      height: 50px;
       background: linear-gradient(180deg, rgba(184, 115, 51, 0.18) 0%, rgba(184, 115, 51, 0.04) 100%);
       border: 1px solid rgba(184, 115, 51, 0.2);
       border-bottom: none;
@@ -708,8 +700,6 @@
     /* --- STANDINGS TABLE --- */
     .standings-table {
       width: 100%;
-      max-width: 700px;
-      margin: 0 auto;
       border-collapse: collapse;
     }
 
@@ -902,15 +892,13 @@
       .modal-header { padding: 16px; }
       .modal-body { padding: 16px; }
 
-      .results-section { padding: 24px 16px 20px; }
-
       .podium { gap: 3px; }
-      .podium-place { width: 110px; }
-      .podium-player-name { font-size: 13px; }
-      .podium-prize { font-size: 11px; }
-      .podium-1st .podium-bar { height: 80px; }
-      .podium-2nd .podium-bar { height: 56px; }
-      .podium-3rd .podium-bar { height: 40px; }
+      .podium-place { width: 100px; }
+      .podium-player-name { font-size: 12px; }
+      .podium-prize { font-size: 10px; }
+      .podium-1st .podium-bar { height: 70px; }
+      .podium-2nd .podium-bar { height: 50px; }
+      .podium-3rd .podium-bar { height: 35px; }
 
       .standings-table td { font-size: 12px; padding: 8px 6px; }
       .standings-table th { font-size: 9px; padding: 6px; }
@@ -982,43 +970,6 @@
   <div class="champion-banner hidden" id="championBanner">
     <div class="champion-label">Tournament Champion</div>
     <div class="champion-name" id="championName"></div>
-  </div>
-
-  <!-- PODIUM + STANDINGS -->
-  <div class="results-section" id="resultsSection">
-    <div class="podium">
-      <div class="podium-place podium-2nd">
-        <div class="podium-rank">2nd</div>
-        <div class="podium-player-name" id="podium2ndName">TBD</div>
-        <div class="podium-prize" id="podium2ndPrize"></div>
-        <div class="podium-bar"></div>
-      </div>
-      <div class="podium-place podium-1st">
-        <div class="podium-rank">1st</div>
-        <div class="podium-player-name" id="podium1stName">TBD</div>
-        <div class="podium-prize" id="podium1stPrize"></div>
-        <div class="podium-bar"></div>
-      </div>
-      <div class="podium-place podium-3rd">
-        <div class="podium-rank">3rd</div>
-        <div class="podium-player-name" id="podium3rdName">TBD</div>
-        <div class="podium-prize" id="podium3rdPrize"></div>
-        <div class="podium-bar"></div>
-      </div>
-    </div>
-
-    <table class="standings-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Player</th>
-          <th>Status</th>
-          <th class="st-elim">Eliminated By</th>
-        </tr>
-      </thead>
-      <tbody id="standingsBody">
-      </tbody>
-    </table>
   </div>
 
   <div class="bracket-wrapper" id="bracketWrapper">
@@ -1108,6 +1059,51 @@
     </div>
   </div>
 
+  <!-- STANDINGS MODAL -->
+  <div class="modal-overlay" id="standingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Standings</h2>
+        <button class="modal-close" onclick="closeModal('standingsModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="podium">
+          <div class="podium-place podium-2nd">
+            <div class="podium-rank">2nd</div>
+            <div class="podium-player-name" id="podium2ndName">TBD</div>
+            <div class="podium-prize" id="podium2ndPrize"></div>
+            <div class="podium-bar"></div>
+          </div>
+          <div class="podium-place podium-1st">
+            <div class="podium-rank">1st</div>
+            <div class="podium-player-name" id="podium1stName">TBD</div>
+            <div class="podium-prize" id="podium1stPrize"></div>
+            <div class="podium-bar"></div>
+          </div>
+          <div class="podium-place podium-3rd">
+            <div class="podium-rank">3rd</div>
+            <div class="podium-player-name" id="podium3rdName">TBD</div>
+            <div class="podium-prize" id="podium3rdPrize"></div>
+            <div class="podium-bar"></div>
+          </div>
+        </div>
+
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Status</th>
+              <th class="st-elim">Eliminated By</th>
+            </tr>
+          </thead>
+          <tbody id="standingsBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <script>
     var API_URL = 'https://script.google.com/macros/s/AKfycbxZmswm0dTWACbHjqUfM0548nqR1ZIUkorU-ndtON1Vm9_O1_h_zSJFd7_e-yk77tCHLQ/exec';
     var POLL_INTERVAL = 15000;
@@ -1129,8 +1125,8 @@
     });
 
     document.getElementById('btnStandings').addEventListener('click', function() {
-      var section = document.getElementById('resultsSection');
-      if (section) section.scrollIntoView({ behavior: 'smooth' });
+      renderStandings();
+      openModal('standingsModal');
     });
 
     document.getElementById('infoDonors').addEventListener('click', function() {
@@ -1245,7 +1241,34 @@
       } else {
         banner.classList.add('hidden');
       }
-      renderResults();
+    }
+
+    function renderDonorsModal() {
+      var body = document.getElementById('donorsModalBody');
+      var donations = (state && state.donations) ? state.donations : [];
+
+      if (donations.length === 0) {
+        body.innerHTML = '<div class="donor-empty">No donations yet. Contributions of cash or items are welcome and grow the prize pool.</div>';
+        return;
+      }
+
+      var html = '';
+      var total = 0;
+
+      donations.forEach(function(d) {
+        total += (d.amount || 0);
+        html += '<div class="donor-list-item">';
+        html += '  <span class="donor-list-name">' + esc(d.donorName) + '</span>';
+        html += '  <span class="donor-list-amount">' + formatMoney(d.amount) + '</span>';
+        html += '</div>';
+      });
+
+      html += '<div class="donor-total-row">';
+      html += '  <span class="donor-total-label">Total Donated</span>';
+      html += '  <span class="donor-total-amount">' + formatMoney(total) + '</span>';
+      html += '</div>';
+
+      body.innerHTML = html;
     }
 
     function getPlacements() {
@@ -1280,31 +1303,18 @@
 
     function getPool() {
       var playerCount = (state && state.players) ? state.players.length : 0;
-      var donationTotal = getDonationTotal();
-      return (playerCount * 20000000) + donationTotal;
+      return (playerCount * 20000000) + getDonationTotal();
     }
 
-    function renderResults() {
-      var section = document.getElementById('resultsSection');
+    function profileLink(name, tornId) {
+      return '<a href="https://www.torn.com/profiles.php?XID=' + tornId + '" target="_blank" rel="noopener">' + esc(name) + '</a>';
+    }
+
+    function renderStandings() {
+      if (!state || !state.players) return;
+
       var placements = getPlacements();
-
-      // Show if at least one elimination has happened
-      var hasEliminations = state && state.matches && state.matches.some(function(m) {
-        return m.status === 'complete' && m.loserNextMatch === 'ELIMINATED';
-      });
-
-      if (!hasEliminations && !placements.third && !placements.first) {
-        section.classList.remove('visible');
-        return;
-      }
-
-      section.classList.add('visible');
-
       var pool = getPool();
-
-      function profileLink(name, tornId) {
-        return '<a href="https://www.torn.com/profiles.php?XID=' + tornId + '" target="_blank" rel="noopener">' + esc(name) + '</a>';
-      }
 
       function setPlace(pos, data, pct) {
         var nameEl = document.getElementById('podium' + pos + 'Name');
@@ -1322,22 +1332,21 @@
       setPlace('2nd', placements.second, 0.3);
       setPlace('3rd', placements.third, 0.2);
 
-      // Build standings table
       var eliminations = [];
-      state.matches.forEach(function(m) {
-        if (m.status !== 'complete' || !m.winnerName) return;
-        var loserName = (m.winnerName === m.player1Name) ? m.player2Name : m.player1Name;
-        var loserTornId = (m.winnerName === m.player1Name) ? m.player2TornID : m.player1TornID;
-        if (m.loserNextMatch === 'ELIMINATED') {
-          eliminations.push({
-            name: loserName,
-            tornId: loserTornId,
-            round: m.round,
-            bracket: m.bracket,
-            eliminatedBy: m.winnerName
-          });
-        }
-      });
+      if (state.matches) {
+        state.matches.forEach(function(m) {
+          if (m.status !== 'complete' || !m.winnerName) return;
+          var loserName = (m.winnerName === m.player1Name) ? m.player2Name : m.player1Name;
+          var loserTornId = (m.winnerName === m.player1Name) ? m.player2TornID : m.player1TornID;
+          if (m.loserNextMatch === 'ELIMINATED') {
+            eliminations.push({
+              name: loserName, tornId: loserTornId,
+              round: m.round, bracket: m.bracket,
+              eliminatedBy: m.winnerName
+            });
+          }
+        });
+      }
 
       eliminations.sort(function(a, b) { return b.round - a.round; });
 
@@ -1347,11 +1356,9 @@
       if (placements.first) {
         rows.push({ rank: rank++, name: placements.first.name, tornId: placements.first.tornId, status: 'champion', eliminatedBy: '', prize: formatMoney(Math.floor(pool * 0.5)), rowClass: 'st-row-1st' });
       }
-
       if (placements.second) {
         rows.push({ rank: rank++, name: placements.second.name, tornId: placements.second.tornId, status: 'eliminated', eliminatedBy: placements.first ? placements.first.name : '', prize: formatMoney(Math.floor(pool * 0.3)), rowClass: 'st-row-2nd' });
       }
-
       if (placements.third) {
         var thirdElim = eliminations.find(function(e) { return e.name === placements.third.name; });
         rows.push({ rank: rank++, name: placements.third.name, tornId: placements.third.tornId, status: 'eliminated', eliminatedBy: thirdElim ? thirdElim.eliminatedBy : '', prize: formatMoney(Math.floor(pool * 0.2)), rowClass: 'st-row-3rd' });
@@ -1378,41 +1385,12 @@
         html += '<td class="st-name">' + profileLink(row.name, row.tornId);
         if (row.prize) html += '<span class="st-prize-inline">' + row.prize + '</span>';
         html += '</td>';
-        var statusClass = 'st-status-' + row.status;
         var statusLabel = row.status === 'champion' ? 'Champion' : row.status === 'active' ? 'Active' : 'Eliminated';
-        html += '<td><span class="st-status-badge ' + statusClass + '">' + statusLabel + '</span></td>';
+        html += '<td><span class="st-status-badge st-status-' + row.status + '">' + statusLabel + '</span></td>';
         html += '<td class="st-elim">' + esc(row.eliminatedBy) + '</td>';
         html += '</tr>';
       });
       tbody.innerHTML = html;
-    }
-
-    function renderDonorsModal() {
-      var body = document.getElementById('donorsModalBody');
-      var donations = (state && state.donations) ? state.donations : [];
-
-      if (donations.length === 0) {
-        body.innerHTML = '<div class="donor-empty">No donations yet. Contributions of cash or items are welcome and grow the prize pool.</div>';
-        return;
-      }
-
-      var html = '';
-      var total = 0;
-
-      donations.forEach(function(d) {
-        total += (d.amount || 0);
-        html += '<div class="donor-list-item">';
-        html += '  <span class="donor-list-name">' + esc(d.donorName) + '</span>';
-        html += '  <span class="donor-list-amount">' + formatMoney(d.amount) + '</span>';
-        html += '</div>';
-      });
-
-      html += '<div class="donor-total-row">';
-      html += '  <span class="donor-total-label">Total Donated</span>';
-      html += '  <span class="donor-total-amount">' + formatMoney(total) + '</span>';
-      html += '</div>';
-
-      body.innerHTML = html;
     }
 
     function renderBracket() {
