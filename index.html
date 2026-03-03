@@ -615,6 +615,181 @@
       text-align: center;
     }
 
+    /* --- PODIUM --- */
+    .results-section {
+      border-bottom: 1px solid var(--border);
+      padding: 40px 32px 32px;
+      display: none;
+    }
+
+    .results-section.visible { display: block; }
+
+    .podium {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+      margin-bottom: 32px;
+    }
+
+    .podium-place {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 180px;
+    }
+
+    .podium-rank {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .podium-1st .podium-rank { color: var(--accent); }
+    .podium-2nd .podium-rank { color: #a0a8b8; }
+    .podium-3rd .podium-rank { color: #b87333; }
+
+    .podium-player-name {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .podium-player-name a { color: inherit; text-decoration: none; }
+    .podium-player-name a:hover { color: var(--accent); }
+
+    .podium-prize {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .podium-1st .podium-prize { color: var(--accent); }
+    .podium-2nd .podium-prize { color: #a0a8b8; }
+    .podium-3rd .podium-prize { color: #b87333; }
+
+    .podium-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .podium-1st .podium-bar {
+      height: 120px;
+      background: linear-gradient(180deg, rgba(232, 168, 50, 0.25) 0%, rgba(232, 168, 50, 0.06) 100%);
+      border: 1px solid rgba(232, 168, 50, 0.3);
+      border-bottom: none;
+    }
+
+    .podium-2nd .podium-bar {
+      height: 85px;
+      background: linear-gradient(180deg, rgba(160, 168, 184, 0.18) 0%, rgba(160, 168, 184, 0.04) 100%);
+      border: 1px solid rgba(160, 168, 184, 0.2);
+      border-bottom: none;
+    }
+
+    .podium-3rd .podium-bar {
+      height: 60px;
+      background: linear-gradient(180deg, rgba(184, 115, 51, 0.18) 0%, rgba(184, 115, 51, 0.04) 100%);
+      border: 1px solid rgba(184, 115, 51, 0.2);
+      border-bottom: none;
+    }
+
+    /* --- STANDINGS TABLE --- */
+    .standings-table {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+
+    .standings-table th {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .standings-table td {
+      font-size: 13px;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .standings-table tr:last-child td { border-bottom: none; }
+
+    .standings-table td.st-rank {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      width: 40px;
+    }
+
+    .standings-table td.st-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .standings-table td.st-name a { color: inherit; text-decoration: none; }
+    .standings-table td.st-name a:hover { color: var(--accent); }
+
+    .st-prize-inline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-left: 6px;
+    }
+
+    .st-status-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .st-status-champion {
+      background: rgba(232, 168, 50, 0.12);
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+    }
+
+    .st-status-active {
+      background: rgba(61, 186, 106, 0.1);
+      color: var(--green);
+      border: 1px solid var(--green-dim);
+    }
+
+    .st-status-eliminated {
+      background: var(--surface-2);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .st-row-1st td.st-rank { color: var(--accent); }
+    .st-row-2nd td.st-rank { color: #a0a8b8; }
+    .st-row-3rd td.st-rank { color: #b87333; }
+
     /* --- FOOTER --- */
     .site-footer {
       padding: 20px 32px;
@@ -726,6 +901,21 @@
       .modal { max-height: 90vh; }
       .modal-header { padding: 16px; }
       .modal-body { padding: 16px; }
+
+      .results-section { padding: 24px 16px 20px; }
+
+      .podium { gap: 3px; }
+      .podium-place { width: 110px; }
+      .podium-player-name { font-size: 13px; }
+      .podium-prize { font-size: 11px; }
+      .podium-1st .podium-bar { height: 80px; }
+      .podium-2nd .podium-bar { height: 56px; }
+      .podium-3rd .podium-bar { height: 40px; }
+
+      .standings-table td { font-size: 12px; padding: 8px 6px; }
+      .standings-table th { font-size: 9px; padding: 6px; }
+      .standings-table td.st-elim { display: none; }
+      .standings-table th.st-elim { display: none; }
     }
   </style>
 </head>
@@ -734,6 +924,7 @@
   <header class="header">
     <h1> Torn Heads-Up Championship</h1>
     <div class="header-right">
+      <button class="btn-rules" id="btnStandings">Standings</button>
       <button class="btn-rules" id="btnRules">Rules</button>
       <div class="live-dot" id="liveDot"></div>
       <span class="refresh-label" id="refreshLabel">updating...</span>
@@ -791,6 +982,43 @@
   <div class="champion-banner hidden" id="championBanner">
     <div class="champion-label">Tournament Champion</div>
     <div class="champion-name" id="championName"></div>
+  </div>
+
+  <!-- PODIUM + STANDINGS -->
+  <div class="results-section" id="resultsSection">
+    <div class="podium">
+      <div class="podium-place podium-2nd">
+        <div class="podium-rank">2nd</div>
+        <div class="podium-player-name" id="podium2ndName">TBD</div>
+        <div class="podium-prize" id="podium2ndPrize"></div>
+        <div class="podium-bar"></div>
+      </div>
+      <div class="podium-place podium-1st">
+        <div class="podium-rank">1st</div>
+        <div class="podium-player-name" id="podium1stName">TBD</div>
+        <div class="podium-prize" id="podium1stPrize"></div>
+        <div class="podium-bar"></div>
+      </div>
+      <div class="podium-place podium-3rd">
+        <div class="podium-rank">3rd</div>
+        <div class="podium-player-name" id="podium3rdName">TBD</div>
+        <div class="podium-prize" id="podium3rdPrize"></div>
+        <div class="podium-bar"></div>
+      </div>
+    </div>
+
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th>Status</th>
+          <th class="st-elim">Eliminated By</th>
+        </tr>
+      </thead>
+      <tbody id="standingsBody">
+      </tbody>
+    </table>
   </div>
 
   <div class="bracket-wrapper" id="bracketWrapper">
@@ -898,6 +1126,11 @@
 
     document.getElementById('btnRules').addEventListener('click', function() {
       openModal('rulesModal');
+    });
+
+    document.getElementById('btnStandings').addEventListener('click', function() {
+      var section = document.getElementById('resultsSection');
+      if (section) section.scrollIntoView({ behavior: 'smooth' });
     });
 
     document.getElementById('infoDonors').addEventListener('click', function() {
@@ -1012,6 +1245,146 @@
       } else {
         banner.classList.add('hidden');
       }
+      renderResults();
+    }
+
+    function getPlacements() {
+      var result = { first: null, second: null, third: null };
+      if (!state || !state.matches) return result;
+
+      var gf1 = state.matches.find(function(m) { return m.matchId === 'GF-M1'; });
+      if (gf1 && gf1.status === 'complete' && gf1.winnerName) {
+        result.first = { name: gf1.winnerName, tornId: gf1.winnerTornID };
+        var secondName = (gf1.winnerName === gf1.player1Name) ? gf1.player2Name : gf1.player1Name;
+        var secondId = (gf1.winnerName === gf1.player1Name) ? gf1.player2TornID : gf1.player1TornID;
+        result.second = { name: secondName, tornId: secondId };
+      }
+
+      var lbMatches = state.matches.filter(function(m) { return m.bracket === 'losers'; });
+      if (lbMatches.length > 0) {
+        var lbFinal = lbMatches.reduce(function(best, m) {
+          if (m.round > best.round) return m;
+          if (m.round === best.round && m.match > best.match) return m;
+          return best;
+        }, lbMatches[0]);
+
+        if (lbFinal && lbFinal.status === 'complete' && lbFinal.winnerName) {
+          var thirdName = (lbFinal.winnerName === lbFinal.player1Name) ? lbFinal.player2Name : lbFinal.player1Name;
+          var thirdId = (lbFinal.winnerName === lbFinal.player1Name) ? lbFinal.player2TornID : lbFinal.player1TornID;
+          result.third = { name: thirdName, tornId: thirdId };
+        }
+      }
+
+      return result;
+    }
+
+    function getPool() {
+      var playerCount = (state && state.players) ? state.players.length : 0;
+      var donationTotal = getDonationTotal();
+      return (playerCount * 20000000) + donationTotal;
+    }
+
+    function renderResults() {
+      var section = document.getElementById('resultsSection');
+      var placements = getPlacements();
+
+      // Show if at least one elimination has happened
+      var hasEliminations = state && state.matches && state.matches.some(function(m) {
+        return m.status === 'complete' && m.loserNextMatch === 'ELIMINATED';
+      });
+
+      if (!hasEliminations && !placements.third && !placements.first) {
+        section.classList.remove('visible');
+        return;
+      }
+
+      section.classList.add('visible');
+
+      var pool = getPool();
+
+      function profileLink(name, tornId) {
+        return '<a href="https://www.torn.com/profiles.php?XID=' + tornId + '" target="_blank" rel="noopener">' + esc(name) + '</a>';
+      }
+
+      function setPlace(pos, data, pct) {
+        var nameEl = document.getElementById('podium' + pos + 'Name');
+        var prizeEl = document.getElementById('podium' + pos + 'Prize');
+        if (data) {
+          nameEl.innerHTML = profileLink(data.name, data.tornId);
+          prizeEl.textContent = formatMoney(Math.floor(pool * pct));
+        } else {
+          nameEl.textContent = 'TBD';
+          prizeEl.textContent = '';
+        }
+      }
+
+      setPlace('1st', placements.first, 0.5);
+      setPlace('2nd', placements.second, 0.3);
+      setPlace('3rd', placements.third, 0.2);
+
+      // Build standings table
+      var eliminations = [];
+      state.matches.forEach(function(m) {
+        if (m.status !== 'complete' || !m.winnerName) return;
+        var loserName = (m.winnerName === m.player1Name) ? m.player2Name : m.player1Name;
+        var loserTornId = (m.winnerName === m.player1Name) ? m.player2TornID : m.player1TornID;
+        if (m.loserNextMatch === 'ELIMINATED') {
+          eliminations.push({
+            name: loserName,
+            tornId: loserTornId,
+            round: m.round,
+            bracket: m.bracket,
+            eliminatedBy: m.winnerName
+          });
+        }
+      });
+
+      eliminations.sort(function(a, b) { return b.round - a.round; });
+
+      var rows = [];
+      var rank = 1;
+
+      if (placements.first) {
+        rows.push({ rank: rank++, name: placements.first.name, tornId: placements.first.tornId, status: 'champion', eliminatedBy: '', prize: formatMoney(Math.floor(pool * 0.5)), rowClass: 'st-row-1st' });
+      }
+
+      if (placements.second) {
+        rows.push({ rank: rank++, name: placements.second.name, tornId: placements.second.tornId, status: 'eliminated', eliminatedBy: placements.first ? placements.first.name : '', prize: formatMoney(Math.floor(pool * 0.3)), rowClass: 'st-row-2nd' });
+      }
+
+      if (placements.third) {
+        var thirdElim = eliminations.find(function(e) { return e.name === placements.third.name; });
+        rows.push({ rank: rank++, name: placements.third.name, tornId: placements.third.tornId, status: 'eliminated', eliminatedBy: thirdElim ? thirdElim.eliminatedBy : '', prize: formatMoney(Math.floor(pool * 0.2)), rowClass: 'st-row-3rd' });
+        eliminations = eliminations.filter(function(e) { return e.name !== placements.third.name; });
+      }
+
+      var placedNames = rows.map(function(r) { return r.name; });
+      eliminations.forEach(function(e) {
+        if (placedNames.indexOf(e.name) !== -1) return;
+        rows.push({ rank: rank++, name: e.name, tornId: e.tornId, status: 'eliminated', eliminatedBy: e.eliminatedBy, prize: '', rowClass: '' });
+      });
+
+      var allPlacedNames = rows.map(function(r) { return r.name; });
+      state.players.forEach(function(p) {
+        if (allPlacedNames.indexOf(p.name) !== -1) return;
+        rows.push({ rank: '', name: p.name, tornId: p.tornId, status: 'active', eliminatedBy: '', prize: '', rowClass: '' });
+      });
+
+      var tbody = document.getElementById('standingsBody');
+      var html = '';
+      rows.forEach(function(row) {
+        html += '<tr class="' + row.rowClass + '">';
+        html += '<td class="st-rank">' + (row.rank || '') + '</td>';
+        html += '<td class="st-name">' + profileLink(row.name, row.tornId);
+        if (row.prize) html += '<span class="st-prize-inline">' + row.prize + '</span>';
+        html += '</td>';
+        var statusClass = 'st-status-' + row.status;
+        var statusLabel = row.status === 'champion' ? 'Champion' : row.status === 'active' ? 'Active' : 'Eliminated';
+        html += '<td><span class="st-status-badge ' + statusClass + '">' + statusLabel + '</span></td>';
+        html += '<td class="st-elim">' + esc(row.eliminatedBy) + '</td>';
+        html += '</tr>';
+      });
+      tbody.innerHTML = html;
     }
 
     function renderDonorsModal() {
